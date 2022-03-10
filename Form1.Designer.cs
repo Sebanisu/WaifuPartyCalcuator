@@ -40,6 +40,8 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textMax = new System.Windows.Forms.TextBox();
             this.checkDistinct = new System.Windows.Forms.CheckBox();
             this.checkVariance = new System.Windows.Forms.CheckBox();
             this.radioLCP = new System.Windows.Forms.RadioButton();
@@ -54,6 +56,12 @@
             this.radio777 = new System.Windows.Forms.RadioButton();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -64,12 +72,6 @@
             this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textMax = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -157,7 +159,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(792, 398);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Parties";
+            this.tabPage2.Text = "Party Generator";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // splitContainer1
@@ -197,6 +199,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.textMax);
             this.groupBox1.Controls.Add(this.checkDistinct);
@@ -219,30 +223,47 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Party Goals";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 319);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(30, 15);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Max";
+            // 
+            // textMax
+            // 
+            this.textMax.Location = new System.Drawing.Point(42, 316);
+            this.textMax.Name = "textMax";
+            this.textMax.Size = new System.Drawing.Size(52, 23);
+            this.textMax.TabIndex = 12;
+            this.textMax.Text = "100";
+            // 
             // checkDistinct
             // 
             this.checkDistinct.AutoSize = true;
-            this.checkDistinct.Location = new System.Drawing.Point(6, 296);
+            this.checkDistinct.Location = new System.Drawing.Point(6, 292);
             this.checkDistinct.Name = "checkDistinct";
-            this.checkDistinct.Size = new System.Drawing.Size(66, 19);
+            this.checkDistinct.Size = new System.Drawing.Size(110, 19);
             this.checkDistinct.TabIndex = 11;
-            this.checkDistinct.Text = "Distinct";
+            this.checkDistinct.Text = "Distinct (P, C, L)";
             this.checkDistinct.UseVisualStyleBackColor = true;
             // 
             // checkVariance
             // 
             this.checkVariance.AutoSize = true;
-            this.checkVariance.Location = new System.Drawing.Point(6, 272);
+            this.checkVariance.Location = new System.Drawing.Point(6, 267);
             this.checkVariance.Name = "checkVariance";
-            this.checkVariance.Size = new System.Drawing.Size(70, 19);
+            this.checkVariance.Size = new System.Drawing.Size(95, 19);
             this.checkVariance.TabIndex = 10;
-            this.checkVariance.Text = "Variance";
+            this.checkVariance.Text = "Low Variance";
             this.checkVariance.UseVisualStyleBackColor = true;
             // 
             // radioLCP
             // 
             this.radioLCP.AutoSize = true;
-            this.radioLCP.Location = new System.Drawing.Point(6, 247);
+            this.radioLCP.Location = new System.Drawing.Point(64, 242);
             this.radioLCP.Name = "radioLCP";
             this.radioLCP.Size = new System.Drawing.Size(52, 19);
             this.radioLCP.TabIndex = 9;
@@ -253,7 +274,7 @@
             // radioLPC
             // 
             this.radioLPC.AutoSize = true;
-            this.radioLPC.Location = new System.Drawing.Point(6, 222);
+            this.radioLPC.Location = new System.Drawing.Point(64, 217);
             this.radioLPC.Name = "radioLPC";
             this.radioLPC.Size = new System.Drawing.Size(52, 19);
             this.radioLPC.TabIndex = 8;
@@ -264,7 +285,7 @@
             // radioCLP
             // 
             this.radioCLP.AutoSize = true;
-            this.radioCLP.Location = new System.Drawing.Point(6, 197);
+            this.radioCLP.Location = new System.Drawing.Point(64, 192);
             this.radioCLP.Name = "radioCLP";
             this.radioCLP.Size = new System.Drawing.Size(52, 19);
             this.radioCLP.TabIndex = 7;
@@ -275,7 +296,7 @@
             // radioCPL
             // 
             this.radioCPL.AutoSize = true;
-            this.radioCPL.Location = new System.Drawing.Point(6, 172);
+            this.radioCPL.Location = new System.Drawing.Point(64, 167);
             this.radioCPL.Name = "radioCPL";
             this.radioCPL.Size = new System.Drawing.Size(52, 19);
             this.radioCPL.TabIndex = 6;
@@ -285,7 +306,7 @@
             // radioPLC
             // 
             this.radioPLC.AutoSize = true;
-            this.radioPLC.Location = new System.Drawing.Point(6, 147);
+            this.radioPLC.Location = new System.Drawing.Point(64, 142);
             this.radioPLC.Name = "radioPLC";
             this.radioPLC.Size = new System.Drawing.Size(52, 19);
             this.radioPLC.TabIndex = 5;
@@ -295,7 +316,7 @@
             // radioPCL
             // 
             this.radioPCL.AutoSize = true;
-            this.radioPCL.Location = new System.Drawing.Point(6, 122);
+            this.radioPCL.Location = new System.Drawing.Point(64, 117);
             this.radioPCL.Name = "radioPCL";
             this.radioPCL.Size = new System.Drawing.Size(52, 19);
             this.radioPCL.TabIndex = 4;
@@ -305,7 +326,7 @@
             // radio101010
             // 
             this.radio101010.AutoSize = true;
-            this.radio101010.Location = new System.Drawing.Point(6, 97);
+            this.radio101010.Location = new System.Drawing.Point(64, 95);
             this.radio101010.Name = "radio101010";
             this.radio101010.Size = new System.Drawing.Size(67, 19);
             this.radio101010.TabIndex = 3;
@@ -315,7 +336,7 @@
             // radio999
             // 
             this.radio999.AutoSize = true;
-            this.radio999.Location = new System.Drawing.Point(6, 72);
+            this.radio999.Location = new System.Drawing.Point(64, 70);
             this.radio999.Name = "radio999";
             this.radio999.Size = new System.Drawing.Size(49, 19);
             this.radio999.TabIndex = 2;
@@ -325,7 +346,7 @@
             // radio888
             // 
             this.radio888.AutoSize = true;
-            this.radio888.Location = new System.Drawing.Point(6, 47);
+            this.radio888.Location = new System.Drawing.Point(64, 45);
             this.radio888.Name = "radio888";
             this.radio888.Size = new System.Drawing.Size(49, 19);
             this.radio888.TabIndex = 1;
@@ -336,7 +357,7 @@
             // 
             this.radio777.AutoSize = true;
             this.radio777.Checked = true;
-            this.radio777.Location = new System.Drawing.Point(6, 22);
+            this.radio777.Location = new System.Drawing.Point(64, 20);
             this.radio777.Name = "radio777";
             this.radio777.Size = new System.Drawing.Size(49, 19);
             this.radio777.TabIndex = 0;
@@ -380,6 +401,57 @@
             this.dataGridView2.Size = new System.Drawing.Size(636, 392);
             this.dataGridView2.TabIndex = 0;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.TabIndex = 1;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.loadToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Text = "Save Waifus";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadToolStripMenuItem.Text = "Reload Waifus";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 119);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(56, 15);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Order By:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 22);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(52, 15);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "Filter By:";
+            // 
             // Column1
             // 
             this.Column1.HeaderText = "Name 1";
@@ -418,19 +490,19 @@
             // 
             // Column7
             // 
-            this.Column7.HeaderText = "P";
+            this.Column7.HeaderText = "Perception";
             this.Column7.Name = "Column7";
             this.Column7.ReadOnly = true;
             // 
             // Column8
             // 
-            this.Column8.HeaderText = "C";
+            this.Column8.HeaderText = "Charisma";
             this.Column8.Name = "Column8";
             this.Column8.ReadOnly = true;
             // 
             // Column9
             // 
-            this.Column9.HeaderText = "L";
+            this.Column9.HeaderText = "Luck";
             this.Column9.Name = "Column9";
             this.Column9.ReadOnly = true;
             // 
@@ -439,56 +511,6 @@
             this.Column10.HeaderText = "Variance";
             this.Column10.Name = "Column10";
             this.Column10.ReadOnly = true;
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
-            this.menuStrip1.TabIndex = 1;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
-            this.loadToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
-            // loadToolStripMenuItem
-            // 
-            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
-            this.loadToolStripMenuItem.Text = "Load";
-            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
-            // 
-            // textMax
-            // 
-            this.textMax.Location = new System.Drawing.Point(42, 321);
-            this.textMax.Name = "textMax";
-            this.textMax.Size = new System.Drawing.Size(52, 23);
-            this.textMax.TabIndex = 12;
-            this.textMax.Text = "100";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 324);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 15);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "Max";
             // 
             // Form1
             // 
@@ -551,6 +573,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colLuck;
         private System.Windows.Forms.DataGridViewTextBoxColumn colVariance;
         private System.Windows.Forms.CheckBox checkVariance;
+        private System.Windows.Forms.CheckBox checkDistinct;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textMax;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
@@ -561,8 +588,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
-        private System.Windows.Forms.CheckBox checkDistinct;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textMax;
     }
 }
