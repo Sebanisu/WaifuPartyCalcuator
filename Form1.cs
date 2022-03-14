@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace WaifuPartyCalcuator
 {
@@ -187,8 +188,8 @@ namespace WaifuPartyCalcuator
         }
         IEnumerable<tmpRowData> Dedupe(IEnumerable<tmpRowData> tmpRows)
         {
-            if(checkDistinct.Checked)
-                return tmpRows.GroupBy(x=> new { x.P, x.C, x.L } ).Select(x => x.FirstOrDefault());
+            if (checkDistinct.Checked)
+                return tmpRows.GroupBy(x => new { x.P, x.C, x.L }).Select(x => x.FirstOrDefault());
             return tmpRows.Select(x => x);
         }
 
@@ -221,6 +222,32 @@ namespace WaifuPartyCalcuator
                 }
             }
             dataGridView2.Refresh();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Regex regex = new Regex(textRegex.Text, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
+            var matches = regex.Matches(textSourceCode.Text);
+            if (matches == null || matches.Count == 0) return;
+            dataGridView1.Rows.Clear();
+
+            foreach (Match? match in matches)
+            {
+                if (match == null || !match.Success) continue;
+                int rI = dataGridView1.Rows.Add();
+                Action<string, int> ParseGroup = (str, cI) =>
+                {
+                    if (match.Groups.TryGetValue(str, out Group group))
+                    {
+                        dataGridView1.Rows[rI].Cells[cI].Value = group.Value.Trim();
+                    }
+                };
+                ParseGroup("Name", 0);
+                ParseGroup("P", 1);
+                ParseGroup("C", 2);
+                ParseGroup("L", 3);
+            }
+            dataGridView1.Refresh();
         }
     }
 }
