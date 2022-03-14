@@ -113,26 +113,44 @@ namespace WaifuPartyCalcuator
 
             public float Variance;
         }
-
-        IEnumerable<tmpRowData> GetRowData(IEnumerable<IEnumerable<int>> rPartyRowIndex)
+        IEnumerable<DataGridViewRow> FilteredRows()
+        {
+            foreach(DataGridViewRow? row in dataGridView1.Rows)
+            {
+                if(row == null) continue;
+                if ((row.Cells[0].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                if ((row.Cells[1].Value?.ToString() ?? "0") == "0") continue;
+                if ((row.Cells[2].Value?.ToString() ?? "0") == "0") continue;
+                if ((row.Cells[3].Value?.ToString() ?? "0") == "0") continue;
+                if ((row.Cells[1].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                if ((row.Cells[2].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                if ((row.Cells[3].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                yield return row;
+            }
+        }
+        IEnumerable<tmpRowData> GetRowData(IEnumerable<IEnumerable<int>> rPartyRowIndex, List<DataGridViewRow> filteredRows)
         {
 
             const int partySize = 6;
             foreach (var rowOfIndexes in rPartyRowIndex)
             {
-                if (rowOfIndexes.Any(i => (dataGridView1.Rows[i].Cells[0].Value?.ToString() ?? "").Trim().Length == 0))
-                {
-                    continue;
-                }
+                //if (rowOfIndexes.Any(i => (filteredRows[i].Cells[0].Value?.ToString() ?? "").Trim().Length == 0))
+                //{
+                //    continue;
+                //}
+                //if (rowOfIndexes.Any(i => (filteredRows[i].Cells[1].Value?.ToString() ?? "0").Trim() == "0" && (filteredRows[i].Cells[2].Value?.ToString() ?? "0").Trim() == "0" && (filteredRows[i].Cells[3].Value?.ToString() ?? "0").Trim() == "0"))
+                //{
+                //    continue;
+                //}
                 tmpRowData tmpRow = new tmpRowData
                 {
                     Names = new string[partySize]
                 };
-                foreach (var data in rowOfIndexes.Select((rowi, coli) => new { Row = dataGridView1.Rows[rowi], CellIndex = coli }))
+                foreach (var data in rowOfIndexes.Select((rowi, coli) => new { Row = filteredRows[rowi], CellIndex = coli }))
                 {
                     tmpRow.Names[data.CellIndex] = data.Row.Cells[0].Value?.ToString() ?? "";
                 }
-                Func<int, int, int> GetCellValue = (currenti, rowi) => { int.TryParse(dataGridView1.Rows[rowi].Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; };
+                Func<int, int, int> GetCellValue = (currenti, rowi) => { int.TryParse(filteredRows[rowi].Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; };
                 Func<int, int, double> GetCombinedValue = (currenti, rowi) => rowOfIndexes.Select(rowi => GetCellValue(currenti, rowi)).Average() / 2.0;
                 Func<int, int, double> GetFirstValue = (currenti, rowi) => rowOfIndexes.Select(rowi => GetCellValue(currenti, rowi)).First() / 2.0;
                 Func<int, int> GetProcessedValue = (currenti) => (int)Math.Round(rowOfIndexes.Select(rowi => GetFirstValue(currenti, rowi) + GetCombinedValue(currenti, rowi)).First(), 0);
@@ -197,7 +215,8 @@ namespace WaifuPartyCalcuator
         {
             const int partySize = 6;
             int columnCount = dataGridView1.Columns.Count;
-            int rowCount = dataGridView1.Rows.Count;
+            var filteredRows = FilteredRows().ToList();
+            int rowCount = filteredRows.Count;
             if (columnCount <= 0 || rowCount <= 0) return;
             var rRows = Enumerable.Range(0, rowCount);
             var rPartyRowIndex = GetPermutations(rRows, partySize);
@@ -205,7 +224,7 @@ namespace WaifuPartyCalcuator
             int.TryParse(textMax.Text, out int max);
             if (max <= 1)
                 max = 100;
-            foreach (var tmpRow in Dedupe(GetSorted(GetRowData(rPartyRowIndex))).Take(max))
+            foreach (var tmpRow in Dedupe(GetSorted(GetRowData(rPartyRowIndex,filteredRows))).Take(max))
             {
                 { // add row
                     int currentRowIndex = dataGridView2.Rows.Add();
@@ -226,7 +245,15 @@ namespace WaifuPartyCalcuator
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Regex regex = new Regex(textRegex.Text, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
+            Regex regex;
+            try
+            {
+                regex = new Regex(textRegex.Text, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Multiline);
+            }
+            catch(Exception)
+            {
+                return;
+            }
             var matches = regex.Matches(textSourceCode.Text);
             if (matches == null || matches.Count == 0) return;
             dataGridView1.Rows.Clear();
@@ -248,6 +275,35 @@ namespace WaifuPartyCalcuator
                 ParseGroup("L", 3);
             }
             dataGridView1.Refresh();
+        }
+        private void UpdateCount()
+        {
+            Regex regex;
+            try
+            {
+                regex = new Regex(textRegex.Text, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Multiline);
+            }
+            catch(Exception ex)
+            {
+                labelCount.Text = ex.Message;
+                return;
+            }
+            var matches = regex.Matches(textSourceCode.Text);
+            if (matches == null || matches.Count == 0)
+            {
+                labelCount.Text = "0";
+                return;
+            }
+            labelCount.Text = matches.Count.ToString();
+        }
+        private void textRegex_TextChanged(object sender, EventArgs e)
+        {
+            UpdateCount();
+        }
+
+        private void textSourceCode_TextChanged(object sender, EventArgs e)
+        {
+            UpdateCount();
         }
     }
 }
