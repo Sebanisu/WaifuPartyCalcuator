@@ -15,11 +15,21 @@ namespace WaifuPartyCalcuator
 {
     public partial class Form1 : Form
     {
+        public static class ColPos
+        {
+            public const int Name = 0;
+            public const int Perception = 1;
+            public const int Charisma = 2;
+            public const int Luck = 3;
+            public const int Variance = 4;
+            public const int Level = 5;
+        }
         public Form1()
         {
             InitializeComponent();
         }
-        float getVariance(IEnumerable<int> rRow)
+
+        private float getVariance(IEnumerable<int> rRow)
         {
             float fMean = rRow.Sum() / 3.0f;
             return (float)(rRow.Sum(i => Math.Pow(i - fMean, 2.0)) / 3.0f);
@@ -27,24 +37,24 @@ namespace WaifuPartyCalcuator
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
-            var rRow = Enumerable.Range(1, 3).Select(i => { int.TryParse(dataGridView1.Rows[e.RowIndex].Cells[i].Value?.ToString() ?? "0", out int v); if (v > 0) return v; return 0; });
-            dataGridView1.Rows[e.RowIndex].Cells[4].Value = getVariance(rRow).ToString("F3", CultureInfo.InvariantCulture);
+            var rRow = Enumerable.Range(1, 3).Select(i => { int.TryParse(dataGridViewInput.Rows[e.RowIndex].Cells[i].Value?.ToString() ?? "0", out int v); if (v > 0) return v; return 0; });
+            dataGridViewInput.Rows[e.RowIndex].Cells[4].Value = getVariance(rRow).ToString("F3", CultureInfo.InvariantCulture);
         }
 
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int columnCount = dataGridView1.Columns.Count;
-            int rowCount = dataGridView1.Rows.Count;
+            int columnCount = dataGridViewInput.Columns.Count;
+            int rowCount = dataGridViewInput.Rows.Count;
             if (columnCount <= 0 || rowCount <= 0) return;
 
             string[] outputCsv = new string[rowCount + 1];
-            outputCsv[0] = Enumerable.Range(0, columnCount).Select(i => dataGridView1.Columns[i].HeaderText.ToString() + ",").Aggregate((c, s) => c + s);
+            outputCsv[0] = Enumerable.Range(0, columnCount).Select(i => dataGridViewInput.Columns[i].HeaderText.ToString() + ",").Aggregate((c, s) => c + s);
 
             foreach (int rI in Enumerable.Range(0, rowCount))
             {
-                if ((dataGridView1.Rows[rI].Cells[0].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                outputCsv[rI + 1] = Enumerable.Range(0, columnCount).Select(cI => "\"" + (dataGridView1.Rows[rI].Cells[cI].Value?.ToString() ?? "") + "\",").Aggregate((c, s) => c + s);
+                if ((dataGridViewInput.Rows[rI].Cells[0].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                outputCsv[rI + 1] = Enumerable.Range(0, columnCount).Select(cI => "\"" + (dataGridViewInput.Rows[rI].Cells[cI].Value?.ToString() ?? "") + "\",").Aggregate((c, s) => c + s);
             }
             try
             {
@@ -66,17 +76,17 @@ namespace WaifuPartyCalcuator
             {
                 return;
             }
-            dataGridView1.Rows.Clear();
+            dataGridViewInput.Rows.Clear();
             foreach (string row in inputCsv.Skip(1))
             {
                 if (row.Trim().Length == 0) continue;
-                int rI = dataGridView1.Rows.Add();
-                foreach (var cell in row.Split(',').SkipLast(1).Select((v, i) => new { Value = v.Trim('"'), Index = i }))
+                int rI = dataGridViewInput.Rows.Add();
+                foreach (var cell in row.Split(',').Select((v, i) => new { Value = v.Trim('"'), Index = i }))
                 {
-                    dataGridView1.Rows[rI].Cells[cell.Index].Value = cell.Value;
+                    dataGridViewInput.Rows[rI].Cells[cell.Index].Value = cell.Value;
                 }
             }
-            dataGridView1.Refresh();
+            dataGridViewInput.Refresh();
         }
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -87,10 +97,11 @@ namespace WaifuPartyCalcuator
         {
             LoadData();
         }
+
         /**
          * @see https://stackoverflow.com/a/12249225/2588183
          */
-        IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> items, int count)
+        private IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> items, int count)
         {
             int i = 0;
             foreach (var item in items)
@@ -106,7 +117,8 @@ namespace WaifuPartyCalcuator
                 ++i;
             }
         }
-        IEnumerable<IEnumerable<T>> GetPermutationsFirst<T>(IEnumerable<T> items, int count)
+
+        private IEnumerable<IEnumerable<T>> GetPermutationsFirst<T>(IEnumerable<T> items, int count)
         {
             foreach (T item in items)
             {
@@ -114,11 +126,12 @@ namespace WaifuPartyCalcuator
                     yield return new T[] { item };
                 else
                 {
-                    foreach (var result in GetPermutations(items.Where(x => x!=null && !EqualityComparer<T>.Default.Equals(x, item)),count -1))
+                    foreach (var result in GetPermutations(items.Where(x => x != null && !EqualityComparer<T>.Default.Equals(x, item)), count - 1))
                         yield return new T[] { item }.Concat(result);
                 }
             }
         }
+
         //static IEnumerable<IEnumerable<T>> GetPermutationsWithRept<T>(IEnumerable<T> list, int length)
         //{
         //    if (length == 1) return list.Select(t => new T[] { t });
@@ -133,32 +146,34 @@ namespace WaifuPartyCalcuator
         //        .SelectMany(t => list.Where(o => !t.Contains(o)),
         //            (t1, t2) => t1.Concat(new T[] { t2 }));
         //}
-        struct tmpRowData
+        private struct tmpRowData
         {
             public string[] Names;
-            public int P, C, L;
+            public int P, C, L, Level;
 
             public float Variance;
         }
-        IEnumerable<DataGridViewRow> FilteredRows()
+
+        private IEnumerable<DataGridViewRow> FilteredRows()
         {
-            foreach (DataGridViewRow? row in dataGridView1.Rows)
+            foreach (DataGridViewRow? row in dataGridViewInput.Rows)
             {
                 if (row == null) continue;
-                //if ((row.Cells[0].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                //if ((row.Cells[1].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                //if ((row.Cells[2].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                //if ((row.Cells[3].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                if ((row.Cells[1].Value?.ToString() ?? "0") == "0" &&
-                (row.Cells[2].Value?.ToString() ?? "0") == "0" &&
-                (row.Cells[3].Value?.ToString() ?? "0") == "0")
+                //if ((row.Cells[ColPos.Name].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                //if ((row.Cells[ColPos.Perception].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                //if ((row.Cells[ColPos.Charisma].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                //if ((row.Cells[ColPos.Luck].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                if ((row.Cells[ColPos.Perception].Value?.ToString() ?? "0") == "0" &&
+                (row.Cells[ColPos.Charisma].Value?.ToString() ?? "0") == "0" &&
+                (row.Cells[ColPos.Luck].Value?.ToString() ?? "0") == "0")
                 {
                     continue;
                 }
                 yield return row;
             }
         }
-        IEnumerable<tmpRowData> GetRowData(List<DataGridViewRow> filteredRows)
+
+        private IEnumerable<tmpRowData> GetRowData(List<DataGridViewRow> filteredRows)
         {
 
             const int partySize = 6;
@@ -184,9 +199,10 @@ namespace WaifuPartyCalcuator
                 double GetCombinedValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).Average() / 2.0;
                 double GetFirstValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).First() / 2.0;
                 int GetProcessedValue(int currenti) => (int)Math.Round(partyMembers.Select(row => GetFirstValue(currenti, row) + GetCombinedValue(currenti, row)).First(), 0);
-                tmpRow.P = GetProcessedValue(1);
-                tmpRow.C = GetProcessedValue(2);
-                tmpRow.L = GetProcessedValue(3);
+                tmpRow.P = GetProcessedValue(ColPos.Perception);
+                tmpRow.C = GetProcessedValue(ColPos.Charisma);
+                tmpRow.L = GetProcessedValue(ColPos.Luck);
+                tmpRow.Level = GetProcessedValue(ColPos.Level);
                 bool checkNotMatchNumber(RadioButton radio, int i) => radio.Checked && (tmpRow.P != i || tmpRow.C != i || tmpRow.L != i);
                 { // filter
                     if (checkNotMatchNumber(radio777, 7) || checkNotMatchNumber(radio888, 8) || checkNotMatchNumber(radio999, 9) || checkNotMatchNumber(radio101010, 10))
@@ -203,7 +219,7 @@ namespace WaifuPartyCalcuator
             }
         }
 
-        IOrderedEnumerable<tmpRowData> GetSorted(IEnumerable<tmpRowData> tmpRows)
+        private IOrderedEnumerable<tmpRowData> GetSorted(IEnumerable<tmpRowData> tmpRows)
         {
             if (!checkVariance.Checked)
             {
@@ -234,43 +250,45 @@ namespace WaifuPartyCalcuator
             //if (radioPCL.Checked) //else
             return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
         }
-        IEnumerable<tmpRowData> Dedupe(IEnumerable<tmpRowData> tmpRows)
+
+        private IEnumerable<tmpRowData> Dedupe(IEnumerable<tmpRowData> tmpRows)
         {
             if (checkDistinct.Checked)
-                return tmpRows.GroupBy(x => new { x.P, x.C, x.L }).Select(x => x.FirstOrDefault());
+                return tmpRows.GroupBy(x => new { x.P, x.C, x.L, x.Level }).Select(x => x.FirstOrDefault());
             return tmpRows.Select(x => x);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             const int partySize = 6;
-            int columnCount = dataGridView1.Columns.Count;
+            int columnCount = dataGridViewInput.Columns.Count;
             var filteredRows = FilteredRows().ToList();
             int rowCount = filteredRows.Count;
             if (columnCount <= 0 || rowCount <= 0) return;
             var rRows = Enumerable.Range(0, rowCount);
             //var rPartyRowIndex = GetPermutations(rRows, partySize);
-            dataGridView2.Rows.Clear();
+            dataGridViewOutput.Rows.Clear();
             int.TryParse(textMax.Text, out int max);
             if (max <= 1)
                 max = 100;
             foreach (var tmpRow in Dedupe(GetSorted(GetRowData(filteredRows))).Take(max))
             {
                 { // add row
-                    int currentRowIndex = dataGridView2.Rows.Add();
+                    int currentRowIndex = dataGridViewOutput.Rows.Add();
                     foreach (var data in tmpRow.Names.Select((x, coli) => new { Name = x, Index = coli }))
                     {
-                        dataGridView2.Rows[currentRowIndex].Cells[data.Index].Value = data.Name;
+                        dataGridViewOutput.Rows[currentRowIndex].Cells[data.Index].Value = data.Name;
                     }
-                    void AppendNumber(int currenti, int value) => dataGridView2.Rows[currentRowIndex].Cells[partySize + currenti].Value = value.ToString();
-                    void AppendNumberf(int currenti, float value) => dataGridView2.Rows[currentRowIndex].Cells[partySize + currenti].Value = value.ToString("F3", CultureInfo.InvariantCulture);
-                    AppendNumber(0, tmpRow.P);
-                    AppendNumber(1, tmpRow.C);
-                    AppendNumber(2, tmpRow.L);
-                    AppendNumberf(3, tmpRow.Variance);
+                    void AppendNumber(int currenti, int value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString();
+                    void AppendNumberf(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString("F3", CultureInfo.InvariantCulture);
+                    AppendNumber(ColPos.Perception, tmpRow.P);
+                    AppendNumber(ColPos.Charisma, tmpRow.C);
+                    AppendNumber(ColPos.Luck, tmpRow.L);
+                    AppendNumberf(ColPos.Variance, tmpRow.Variance);
+                    AppendNumber(ColPos.Level, tmpRow.Level);
                 }
             }
-            dataGridView2.Refresh();
+            dataGridViewOutput.Refresh();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -286,25 +304,26 @@ namespace WaifuPartyCalcuator
             }
             var matches = regex.Matches(textSourceCode.Text);
             if (matches == null || matches.Count == 0) return;
-            dataGridView1.Rows.Clear();
+            dataGridViewInput.Rows.Clear();
 
             foreach (Match? match in matches)
             {
                 if (match == null || !match.Success) continue;
-                int rI = dataGridView1.Rows.Add();
+                int rI = dataGridViewInput.Rows.Add();
                 void ParseGroup(string str, int cI)
                 {
                     if (match.Groups.TryGetValue(str, out Group group))
                     {
-                        dataGridView1.Rows[rI].Cells[cI].Value = group.Value.Trim();
+                        dataGridViewInput.Rows[rI].Cells[cI].Value = group.Value.Trim();
                     }
                 }
-                ParseGroup("Name", 0);
-                ParseGroup("P", 1);
-                ParseGroup("C", 2);
-                ParseGroup("L", 3);
+                ParseGroup("Name", ColPos.Name);
+                ParseGroup("P", ColPos.Perception);
+                ParseGroup("C", ColPos.Charisma);
+                ParseGroup("L", ColPos.Luck);
+                ParseGroup("Level", ColPos.Level);
             }
-            dataGridView1.Refresh();
+            dataGridViewInput.Refresh();
         }
         private void UpdateCount()
         {

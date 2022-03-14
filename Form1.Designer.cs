@@ -31,12 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dataGridViewInput = new System.Windows.Forms.DataGridView();
             this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPerception = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCharisma = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLuck = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colVariance = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -57,33 +58,34 @@
             this.radio999 = new System.Windows.Forms.RadioButton();
             this.radio888 = new System.Windows.Forms.RadioButton();
             this.radio777 = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.buttonGenerate = new System.Windows.Forms.Button();
+            this.dataGridViewOutput = new System.Windows.Forms.DataGridView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.textSourceCode = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.textRegex = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.button2 = new System.Windows.Forms.Button();
+            this.buttonImport = new System.Windows.Forms.Button();
             this.labelCount = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colOutName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutPerception = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutCharisma = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutLuck = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutVariance = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInput)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -91,7 +93,7 @@
             this.splitContainer1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutput)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -116,7 +118,7 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.dataGridView1);
+            this.tabPage1.Controls.Add(this.dataGridViewInput);
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -125,22 +127,23 @@
             this.tabPage1.Text = "Waifus";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // dataGridViewInput
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewInput.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewInput.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colName,
             this.colPerception,
             this.colCharisma,
             this.colLuck,
-            this.colVariance});
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(3, 3);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 25;
-            this.dataGridView1.Size = new System.Drawing.Size(786, 392);
-            this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
+            this.colVariance,
+            this.colLevel});
+            this.dataGridViewInput.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewInput.Location = new System.Drawing.Point(3, 3);
+            this.dataGridViewInput.Name = "dataGridViewInput";
+            this.dataGridViewInput.RowTemplate.Height = 25;
+            this.dataGridViewInput.Size = new System.Drawing.Size(786, 392);
+            this.dataGridViewInput.TabIndex = 0;
+            this.dataGridViewInput.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
             // 
             // colName
             // 
@@ -168,6 +171,11 @@
             this.colVariance.Name = "colVariance";
             this.colVariance.ReadOnly = true;
             // 
+            // colLevel
+            // 
+            this.colLevel.HeaderText = "Level";
+            this.colLevel.Name = "colLevel";
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.splitContainer1);
@@ -191,7 +199,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.dataGridView2);
+            this.splitContainer1.Panel2.Controls.Add(this.dataGridViewOutput);
             this.splitContainer1.Size = new System.Drawing.Size(786, 392);
             this.splitContainer1.SplitterDistance = 146;
             this.splitContainer1.TabIndex = 0;
@@ -204,7 +212,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.button1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.buttonGenerate, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -400,101 +408,42 @@
             this.radio777.Text = "7,7,7";
             this.radio777.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // buttonGenerate
             // 
-            this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button1.Location = new System.Drawing.Point(3, 361);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(140, 28);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Generate";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonGenerate.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.buttonGenerate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonGenerate.Location = new System.Drawing.Point(3, 361);
+            this.buttonGenerate.Name = "buttonGenerate";
+            this.buttonGenerate.Size = new System.Drawing.Size(140, 28);
+            this.buttonGenerate.TabIndex = 1;
+            this.buttonGenerate.Text = "Generate";
+            this.buttonGenerate.UseVisualStyleBackColor = true;
+            this.buttonGenerate.Click += new System.EventHandler(this.button1_Click);
             // 
-            // dataGridView2
+            // dataGridViewOutput
             // 
-            this.dataGridView2.AllowUserToAddRows = false;
-            this.dataGridView2.AllowUserToDeleteRows = false;
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2,
-            this.Column3,
-            this.Column4,
-            this.Column5,
-            this.Column6,
-            this.Column7,
-            this.Column8,
-            this.Column9,
-            this.Column10});
-            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView2.Location = new System.Drawing.Point(0, 0);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.ReadOnly = true;
-            this.dataGridView2.RowTemplate.Height = 25;
-            this.dataGridView2.Size = new System.Drawing.Size(636, 392);
-            this.dataGridView2.TabIndex = 0;
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "Name 1";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Name 2";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "Name 3";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "Name 4";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "Name 5";
-            this.Column5.Name = "Column5";
-            this.Column5.ReadOnly = true;
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "Name 6";
-            this.Column6.Name = "Column6";
-            this.Column6.ReadOnly = true;
-            // 
-            // Column7
-            // 
-            this.Column7.HeaderText = "Perception";
-            this.Column7.Name = "Column7";
-            this.Column7.ReadOnly = true;
-            // 
-            // Column8
-            // 
-            this.Column8.HeaderText = "Charisma";
-            this.Column8.Name = "Column8";
-            this.Column8.ReadOnly = true;
-            // 
-            // Column9
-            // 
-            this.Column9.HeaderText = "Luck";
-            this.Column9.Name = "Column9";
-            this.Column9.ReadOnly = true;
-            // 
-            // Column10
-            // 
-            this.Column10.HeaderText = "Variance";
-            this.Column10.Name = "Column10";
-            this.Column10.ReadOnly = true;
+            this.dataGridViewOutput.AllowUserToAddRows = false;
+            this.dataGridViewOutput.AllowUserToDeleteRows = false;
+            this.dataGridViewOutput.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewOutput.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colOutName1,
+            this.colOutName2,
+            this.colOutName3,
+            this.colOutName4,
+            this.colOutName5,
+            this.colOutName6,
+            this.colOutPerception,
+            this.colOutCharisma,
+            this.colOutLuck,
+            this.colOutVariance,
+            this.colOutLevel});
+            this.dataGridViewOutput.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewOutput.Location = new System.Drawing.Point(0, 0);
+            this.dataGridViewOutput.Name = "dataGridViewOutput";
+            this.dataGridViewOutput.ReadOnly = true;
+            this.dataGridViewOutput.RowTemplate.Height = 25;
+            this.dataGridViewOutput.Size = new System.Drawing.Size(636, 392);
+            this.dataGridViewOutput.TabIndex = 0;
             // 
             // tabPage3
             // 
@@ -569,7 +518,7 @@
             this.tableLayoutPanel3.ColumnCount = 1;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.Controls.Add(this.button2, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.buttonImport, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.labelCount, 0, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(592, 3);
@@ -580,16 +529,16 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(191, 120);
             this.tableLayoutPanel3.TabIndex = 2;
             // 
-            // button2
+            // buttonImport
             // 
-            this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button2.Location = new System.Drawing.Point(3, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(185, 89);
-            this.button2.TabIndex = 0;
-            this.button2.Text = "Import Waifus";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.buttonImport.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonImport.Location = new System.Drawing.Point(3, 3);
+            this.buttonImport.Name = "buttonImport";
+            this.buttonImport.Size = new System.Drawing.Size(185, 89);
+            this.buttonImport.TabIndex = 0;
+            this.buttonImport.Text = "Import Waifus";
+            this.buttonImport.UseVisualStyleBackColor = true;
+            this.buttonImport.Click += new System.EventHandler(this.button2_Click);
             // 
             // labelCount
             // 
@@ -634,6 +583,72 @@
             this.loadToolStripMenuItem.Text = "Reload Waifus";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
+            // colOutName1
+            // 
+            this.colOutName1.HeaderText = "Name 1";
+            this.colOutName1.Name = "colOutName1";
+            this.colOutName1.ReadOnly = true;
+            // 
+            // colOutName2
+            // 
+            this.colOutName2.HeaderText = "Name 2";
+            this.colOutName2.Name = "colOutName2";
+            this.colOutName2.ReadOnly = true;
+            // 
+            // colOutName3
+            // 
+            this.colOutName3.HeaderText = "Name 3";
+            this.colOutName3.Name = "colOutName3";
+            this.colOutName3.ReadOnly = true;
+            // 
+            // colOutName4
+            // 
+            this.colOutName4.HeaderText = "Name 4";
+            this.colOutName4.Name = "colOutName4";
+            this.colOutName4.ReadOnly = true;
+            // 
+            // colOutName5
+            // 
+            this.colOutName5.HeaderText = "Name 5";
+            this.colOutName5.Name = "colOutName5";
+            this.colOutName5.ReadOnly = true;
+            // 
+            // colOutName6
+            // 
+            this.colOutName6.HeaderText = "Name 6";
+            this.colOutName6.Name = "colOutName6";
+            this.colOutName6.ReadOnly = true;
+            // 
+            // colOutPerception
+            // 
+            this.colOutPerception.HeaderText = "Perception";
+            this.colOutPerception.Name = "colOutPerception";
+            this.colOutPerception.ReadOnly = true;
+            // 
+            // colOutCharisma
+            // 
+            this.colOutCharisma.HeaderText = "Charisma";
+            this.colOutCharisma.Name = "colOutCharisma";
+            this.colOutCharisma.ReadOnly = true;
+            // 
+            // colOutLuck
+            // 
+            this.colOutLuck.HeaderText = "Luck";
+            this.colOutLuck.Name = "colOutLuck";
+            this.colOutLuck.ReadOnly = true;
+            // 
+            // colOutVariance
+            // 
+            this.colOutVariance.HeaderText = "Variance";
+            this.colOutVariance.Name = "colOutVariance";
+            this.colOutVariance.ReadOnly = true;
+            // 
+            // colOutLevel
+            // 
+            this.colOutLevel.HeaderText = "Level";
+            this.colOutLevel.Name = "colOutLevel";
+            this.colOutLevel.ReadOnly = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -646,7 +661,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInput)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
@@ -656,7 +671,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOutput)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel1.PerformLayout();
@@ -678,7 +693,7 @@
 
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView dataGridViewInput;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
@@ -694,39 +709,41 @@
         private System.Windows.Forms.RadioButton radio999;
         private System.Windows.Forms.RadioButton radio888;
         private System.Windows.Forms.RadioButton radio777;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.Button buttonGenerate;
+        private System.Windows.Forms.DataGridView dataGridViewOutput;
         private System.Windows.Forms.RadioButton radioLCP;
         private System.Windows.Forms.RadioButton radioLPC;
         private System.Windows.Forms.RadioButton radioCLP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPerception;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colCharisma;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colLuck;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colVariance;
         private System.Windows.Forms.CheckBox checkVariance;
         private System.Windows.Forms.CheckBox checkDistinct;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textMax;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.TextBox textSourceCode;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button buttonImport;
         private System.Windows.Forms.TextBox textRegex;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Label labelCount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPerception;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCharisma;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLuck;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colVariance;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLevel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutName1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutName2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutName3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutName4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutName5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutName6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutPerception;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutCharisma;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutLuck;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutVariance;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOutLevel;
     }
 }
