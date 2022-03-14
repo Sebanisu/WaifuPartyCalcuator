@@ -106,6 +106,33 @@ namespace WaifuPartyCalcuator
                 ++i;
             }
         }
+        IEnumerable<IEnumerable<T>> GetPermutationsFirst<T>(IEnumerable<T> items, int count)
+        {
+            foreach (T item in items)
+            {
+                if (count == 1)
+                    yield return new T[] { item };
+                else
+                {
+                    foreach (var result in GetPermutations(items.Where(x => x!=null && !EqualityComparer<T>.Default.Equals(x, item)),count -1))
+                        yield return new T[] { item }.Concat(result);
+                }
+            }
+        }
+        //static IEnumerable<IEnumerable<T>> GetPermutationsWithRept<T>(IEnumerable<T> list, int length)
+        //{
+        //    if (length == 1) return list.Select(t => new T[] { t });
+        //    return GetPermutationsWithRept(list, length - 1)
+        //        .SelectMany(t => list,
+        //            (t1, t2) => t1.Concat(new T[] { t2 }));
+        //}
+        //static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> list, int length)
+        //{
+        //    if (length == 1) return list.Select(t => new T[] { t });
+        //    return GetPermutations(list, length - 1)
+        //        .SelectMany(t => list.Where(o => !t.Contains(o)),
+        //            (t1, t2) => t1.Concat(new T[] { t2 }));
+        //}
         struct tmpRowData
         {
             public string[] Names;
@@ -115,24 +142,27 @@ namespace WaifuPartyCalcuator
         }
         IEnumerable<DataGridViewRow> FilteredRows()
         {
-            foreach(DataGridViewRow? row in dataGridView1.Rows)
+            foreach (DataGridViewRow? row in dataGridView1.Rows)
             {
-                if(row == null) continue;
-                if ((row.Cells[0].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                if ((row.Cells[1].Value?.ToString() ?? "0") == "0") continue;
-                if ((row.Cells[2].Value?.ToString() ?? "0") == "0") continue;
-                if ((row.Cells[3].Value?.ToString() ?? "0") == "0") continue;
-                if ((row.Cells[1].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                if ((row.Cells[2].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                if ((row.Cells[3].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                if (row == null) continue;
+                //if ((row.Cells[0].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                //if ((row.Cells[1].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                //if ((row.Cells[2].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                //if ((row.Cells[3].Value?.ToString() ?? "").Trim().Length == 0) continue;
+                if ((row.Cells[1].Value?.ToString() ?? "0") == "0" &&
+                (row.Cells[2].Value?.ToString() ?? "0") == "0" &&
+                (row.Cells[3].Value?.ToString() ?? "0") == "0")
+                {
+                    continue;
+                }
                 yield return row;
             }
         }
-        IEnumerable<tmpRowData> GetRowData(IEnumerable<IEnumerable<int>> rPartyRowIndex, List<DataGridViewRow> filteredRows)
+        IEnumerable<tmpRowData> GetRowData(List<DataGridViewRow> filteredRows)
         {
 
             const int partySize = 6;
-            foreach (var rowOfIndexes in rPartyRowIndex)
+            foreach (IEnumerable<DataGridViewRow> partyMembers in GetPermutationsFirst(filteredRows, partySize))
             {
                 //if (rowOfIndexes.Any(i => (filteredRows[i].Cells[0].Value?.ToString() ?? "").Trim().Length == 0))
                 //{
@@ -146,18 +176,18 @@ namespace WaifuPartyCalcuator
                 {
                     Names = new string[partySize]
                 };
-                foreach (var data in rowOfIndexes.Select((rowi, coli) => new { Row = filteredRows[rowi], CellIndex = coli }))
+                foreach (var data in partyMembers.Select((row, coli) => new { Row = row, CellIndex = coli }))
                 {
                     tmpRow.Names[data.CellIndex] = data.Row.Cells[0].Value?.ToString() ?? "";
                 }
-                Func<int, int, int> GetCellValue = (currenti, rowi) => { int.TryParse(filteredRows[rowi].Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; };
-                Func<int, int, double> GetCombinedValue = (currenti, rowi) => rowOfIndexes.Select(rowi => GetCellValue(currenti, rowi)).Average() / 2.0;
-                Func<int, int, double> GetFirstValue = (currenti, rowi) => rowOfIndexes.Select(rowi => GetCellValue(currenti, rowi)).First() / 2.0;
-                Func<int, int> GetProcessedValue = (currenti) => (int)Math.Round(rowOfIndexes.Select(rowi => GetFirstValue(currenti, rowi) + GetCombinedValue(currenti, rowi)).First(), 0);
+                int GetCellValue(int currenti, DataGridViewRow row) { int.TryParse(row.Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; }
+                double GetCombinedValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).Average() / 2.0;
+                double GetFirstValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).First() / 2.0;
+                int GetProcessedValue(int currenti) => (int)Math.Round(partyMembers.Select(row => GetFirstValue(currenti, row) + GetCombinedValue(currenti, row)).First(), 0);
                 tmpRow.P = GetProcessedValue(1);
                 tmpRow.C = GetProcessedValue(2);
                 tmpRow.L = GetProcessedValue(3);
-                Func<RadioButton, int, bool> checkNotMatchNumber = (radio, i) => radio.Checked && (tmpRow.P != i || tmpRow.C != i || tmpRow.L != i);
+                bool checkNotMatchNumber(RadioButton radio, int i) => radio.Checked && (tmpRow.P != i || tmpRow.C != i || tmpRow.L != i);
                 { // filter
                     if (checkNotMatchNumber(radio777, 7) || checkNotMatchNumber(radio888, 8) || checkNotMatchNumber(radio999, 9) || checkNotMatchNumber(radio101010, 10))
                     {
@@ -219,12 +249,12 @@ namespace WaifuPartyCalcuator
             int rowCount = filteredRows.Count;
             if (columnCount <= 0 || rowCount <= 0) return;
             var rRows = Enumerable.Range(0, rowCount);
-            var rPartyRowIndex = GetPermutations(rRows, partySize);
+            //var rPartyRowIndex = GetPermutations(rRows, partySize);
             dataGridView2.Rows.Clear();
             int.TryParse(textMax.Text, out int max);
             if (max <= 1)
                 max = 100;
-            foreach (var tmpRow in Dedupe(GetSorted(GetRowData(rPartyRowIndex,filteredRows))).Take(max))
+            foreach (var tmpRow in Dedupe(GetSorted(GetRowData(filteredRows))).Take(max))
             {
                 { // add row
                     int currentRowIndex = dataGridView2.Rows.Add();
@@ -232,8 +262,8 @@ namespace WaifuPartyCalcuator
                     {
                         dataGridView2.Rows[currentRowIndex].Cells[data.Index].Value = data.Name;
                     }
-                    Action<int, int> AppendNumber = (currenti, value) => dataGridView2.Rows[currentRowIndex].Cells[partySize + currenti].Value = value.ToString();
-                    Action<int, float> AppendNumberf = (currenti, value) => dataGridView2.Rows[currentRowIndex].Cells[partySize + currenti].Value = value.ToString("F3", CultureInfo.InvariantCulture);
+                    void AppendNumber(int currenti, int value) => dataGridView2.Rows[currentRowIndex].Cells[partySize + currenti].Value = value.ToString();
+                    void AppendNumberf(int currenti, float value) => dataGridView2.Rows[currentRowIndex].Cells[partySize + currenti].Value = value.ToString("F3", CultureInfo.InvariantCulture);
                     AppendNumber(0, tmpRow.P);
                     AppendNumber(1, tmpRow.C);
                     AppendNumber(2, tmpRow.L);
@@ -250,7 +280,7 @@ namespace WaifuPartyCalcuator
             {
                 regex = new Regex(textRegex.Text, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Multiline);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return;
             }
@@ -262,13 +292,13 @@ namespace WaifuPartyCalcuator
             {
                 if (match == null || !match.Success) continue;
                 int rI = dataGridView1.Rows.Add();
-                Action<string, int> ParseGroup = (str, cI) =>
+                void ParseGroup(string str, int cI)
                 {
                     if (match.Groups.TryGetValue(str, out Group group))
                     {
                         dataGridView1.Rows[rI].Cells[cI].Value = group.Value.Trim();
                     }
-                };
+                }
                 ParseGroup("Name", 0);
                 ParseGroup("P", 1);
                 ParseGroup("C", 2);
@@ -283,7 +313,7 @@ namespace WaifuPartyCalcuator
             {
                 regex = new Regex(textRegex.Text, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Multiline);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 labelCount.Text = ex.Message;
                 return;
