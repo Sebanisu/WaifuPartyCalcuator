@@ -28,6 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Charisma");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Perception");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Luck");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Variance");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Level");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -42,17 +47,12 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.listView1 = new System.Windows.Forms.ListView();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.textMax = new System.Windows.Forms.TextBox();
             this.checkDistinct = new System.Windows.Forms.CheckBox();
-            this.checkVariance = new System.Windows.Forms.CheckBox();
-            this.radioLCP = new System.Windows.Forms.RadioButton();
-            this.radioLPC = new System.Windows.Forms.RadioButton();
-            this.radioCLP = new System.Windows.Forms.RadioButton();
-            this.radioCPL = new System.Windows.Forms.RadioButton();
-            this.radioPLC = new System.Windows.Forms.RadioButton();
             this.radioPCL = new System.Windows.Forms.RadioButton();
             this.radio101010 = new System.Windows.Forms.RadioButton();
             this.radio999 = new System.Windows.Forms.RadioButton();
@@ -60,6 +60,17 @@
             this.radio777 = new System.Windows.Forms.RadioButton();
             this.buttonGenerate = new System.Windows.Forms.Button();
             this.dataGridViewOutput = new System.Windows.Forms.DataGridView();
+            this.colOutName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutName6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutPerception = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutCharisma = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutLuck = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutVariance = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colOutLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.textSourceCode = new System.Windows.Forms.TextBox();
@@ -72,17 +83,6 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.colOutName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutName2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutName3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutName4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutName5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutName6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutPerception = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutCharisma = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutLuck = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutVariance = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colOutLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInput)).BeginInit();
@@ -201,7 +201,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dataGridViewOutput);
             this.splitContainer1.Size = new System.Drawing.Size(786, 392);
-            this.splitContainer1.SplitterDistance = 146;
+            this.splitContainer1.SplitterDistance = 149;
             this.splitContainer1.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -219,22 +219,17 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 91.32653F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 8.67347F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(146, 392);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(149, 392);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.listView1);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.textMax);
             this.groupBox1.Controls.Add(this.checkDistinct);
-            this.groupBox1.Controls.Add(this.checkVariance);
-            this.groupBox1.Controls.Add(this.radioLCP);
-            this.groupBox1.Controls.Add(this.radioLPC);
-            this.groupBox1.Controls.Add(this.radioCLP);
-            this.groupBox1.Controls.Add(this.radioCPL);
-            this.groupBox1.Controls.Add(this.radioPLC);
             this.groupBox1.Controls.Add(this.radioPCL);
             this.groupBox1.Controls.Add(this.radio101010);
             this.groupBox1.Controls.Add(this.radio999);
@@ -243,10 +238,30 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(140, 352);
+            this.groupBox1.Size = new System.Drawing.Size(143, 352);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Party Goals";
+            // 
+            // listView1
+            // 
+            this.listView1.HideSelection = false;
+            this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5});
+            this.listView1.Location = new System.Drawing.Point(64, 142);
+            this.listView1.MultiSelect = false;
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(67, 104);
+            this.listView1.TabIndex = 16;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.List;
+            this.listView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDown);
+            this.listView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseMove);
+            this.listView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseUp);
             // 
             // label3
             // 
@@ -260,7 +275,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 119);
+            this.label2.Location = new System.Drawing.Point(2, 136);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 15);
             this.label2.TabIndex = 14;
@@ -286,84 +301,21 @@
             // checkDistinct
             // 
             this.checkDistinct.AutoSize = true;
-            this.checkDistinct.Location = new System.Drawing.Point(6, 292);
+            this.checkDistinct.Location = new System.Drawing.Point(3, 252);
             this.checkDistinct.Name = "checkDistinct";
-            this.checkDistinct.Size = new System.Drawing.Size(110, 19);
+            this.checkDistinct.Size = new System.Drawing.Size(143, 19);
             this.checkDistinct.TabIndex = 11;
-            this.checkDistinct.Text = "Distinct (P, C, L)";
+            this.checkDistinct.Text = "Distinct (P, C, L, Level)";
             this.checkDistinct.UseVisualStyleBackColor = true;
-            // 
-            // checkVariance
-            // 
-            this.checkVariance.AutoSize = true;
-            this.checkVariance.Location = new System.Drawing.Point(6, 267);
-            this.checkVariance.Name = "checkVariance";
-            this.checkVariance.Size = new System.Drawing.Size(95, 19);
-            this.checkVariance.TabIndex = 10;
-            this.checkVariance.Text = "Low Variance";
-            this.checkVariance.UseVisualStyleBackColor = true;
-            // 
-            // radioLCP
-            // 
-            this.radioLCP.AutoSize = true;
-            this.radioLCP.Location = new System.Drawing.Point(64, 242);
-            this.radioLCP.Name = "radioLCP";
-            this.radioLCP.Size = new System.Drawing.Size(52, 19);
-            this.radioLCP.TabIndex = 9;
-            this.radioLCP.TabStop = true;
-            this.radioLCP.Text = "L,C,P";
-            this.radioLCP.UseVisualStyleBackColor = true;
-            // 
-            // radioLPC
-            // 
-            this.radioLPC.AutoSize = true;
-            this.radioLPC.Location = new System.Drawing.Point(64, 217);
-            this.radioLPC.Name = "radioLPC";
-            this.radioLPC.Size = new System.Drawing.Size(52, 19);
-            this.radioLPC.TabIndex = 8;
-            this.radioLPC.TabStop = true;
-            this.radioLPC.Text = "L,P,C";
-            this.radioLPC.UseVisualStyleBackColor = true;
-            // 
-            // radioCLP
-            // 
-            this.radioCLP.AutoSize = true;
-            this.radioCLP.Location = new System.Drawing.Point(64, 192);
-            this.radioCLP.Name = "radioCLP";
-            this.radioCLP.Size = new System.Drawing.Size(52, 19);
-            this.radioCLP.TabIndex = 7;
-            this.radioCLP.TabStop = true;
-            this.radioCLP.Text = "C,L,P";
-            this.radioCLP.UseVisualStyleBackColor = true;
-            // 
-            // radioCPL
-            // 
-            this.radioCPL.AutoSize = true;
-            this.radioCPL.Location = new System.Drawing.Point(64, 167);
-            this.radioCPL.Name = "radioCPL";
-            this.radioCPL.Size = new System.Drawing.Size(52, 19);
-            this.radioCPL.TabIndex = 6;
-            this.radioCPL.Text = "C,P,L";
-            this.radioCPL.UseVisualStyleBackColor = true;
-            // 
-            // radioPLC
-            // 
-            this.radioPLC.AutoSize = true;
-            this.radioPLC.Location = new System.Drawing.Point(64, 142);
-            this.radioPLC.Name = "radioPLC";
-            this.radioPLC.Size = new System.Drawing.Size(52, 19);
-            this.radioPLC.TabIndex = 5;
-            this.radioPLC.Text = "P,L,C";
-            this.radioPLC.UseVisualStyleBackColor = true;
             // 
             // radioPCL
             // 
             this.radioPCL.AutoSize = true;
             this.radioPCL.Location = new System.Drawing.Point(64, 117);
             this.radioPCL.Name = "radioPCL";
-            this.radioPCL.Size = new System.Drawing.Size(52, 19);
+            this.radioPCL.Size = new System.Drawing.Size(54, 19);
             this.radioPCL.TabIndex = 4;
-            this.radioPCL.Text = "P,C,L";
+            this.radioPCL.Text = "None";
             this.radioPCL.UseVisualStyleBackColor = true;
             // 
             // radio101010
@@ -414,11 +366,11 @@
             this.buttonGenerate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonGenerate.Location = new System.Drawing.Point(3, 361);
             this.buttonGenerate.Name = "buttonGenerate";
-            this.buttonGenerate.Size = new System.Drawing.Size(140, 28);
+            this.buttonGenerate.Size = new System.Drawing.Size(143, 28);
             this.buttonGenerate.TabIndex = 1;
             this.buttonGenerate.Text = "Generate";
             this.buttonGenerate.UseVisualStyleBackColor = true;
-            this.buttonGenerate.Click += new System.EventHandler(this.button1_Click);
+            this.buttonGenerate.Click += new System.EventHandler(this.buttonGenerate_Click);
             // 
             // dataGridViewOutput
             // 
@@ -442,8 +394,74 @@
             this.dataGridViewOutput.Name = "dataGridViewOutput";
             this.dataGridViewOutput.ReadOnly = true;
             this.dataGridViewOutput.RowTemplate.Height = 25;
-            this.dataGridViewOutput.Size = new System.Drawing.Size(636, 392);
+            this.dataGridViewOutput.Size = new System.Drawing.Size(633, 392);
             this.dataGridViewOutput.TabIndex = 0;
+            // 
+            // colOutName1
+            // 
+            this.colOutName1.HeaderText = "Name 1";
+            this.colOutName1.Name = "colOutName1";
+            this.colOutName1.ReadOnly = true;
+            // 
+            // colOutName2
+            // 
+            this.colOutName2.HeaderText = "Name 2";
+            this.colOutName2.Name = "colOutName2";
+            this.colOutName2.ReadOnly = true;
+            // 
+            // colOutName3
+            // 
+            this.colOutName3.HeaderText = "Name 3";
+            this.colOutName3.Name = "colOutName3";
+            this.colOutName3.ReadOnly = true;
+            // 
+            // colOutName4
+            // 
+            this.colOutName4.HeaderText = "Name 4";
+            this.colOutName4.Name = "colOutName4";
+            this.colOutName4.ReadOnly = true;
+            // 
+            // colOutName5
+            // 
+            this.colOutName5.HeaderText = "Name 5";
+            this.colOutName5.Name = "colOutName5";
+            this.colOutName5.ReadOnly = true;
+            // 
+            // colOutName6
+            // 
+            this.colOutName6.HeaderText = "Name 6";
+            this.colOutName6.Name = "colOutName6";
+            this.colOutName6.ReadOnly = true;
+            // 
+            // colOutPerception
+            // 
+            this.colOutPerception.HeaderText = "Perception";
+            this.colOutPerception.Name = "colOutPerception";
+            this.colOutPerception.ReadOnly = true;
+            // 
+            // colOutCharisma
+            // 
+            this.colOutCharisma.HeaderText = "Charisma";
+            this.colOutCharisma.Name = "colOutCharisma";
+            this.colOutCharisma.ReadOnly = true;
+            // 
+            // colOutLuck
+            // 
+            this.colOutLuck.HeaderText = "Luck";
+            this.colOutLuck.Name = "colOutLuck";
+            this.colOutLuck.ReadOnly = true;
+            // 
+            // colOutVariance
+            // 
+            this.colOutVariance.HeaderText = "Variance";
+            this.colOutVariance.Name = "colOutVariance";
+            this.colOutVariance.ReadOnly = true;
+            // 
+            // colOutLevel
+            // 
+            this.colOutLevel.HeaderText = "Level";
+            this.colOutLevel.Name = "colOutLevel";
+            this.colOutLevel.ReadOnly = true;
             // 
             // tabPage3
             // 
@@ -538,7 +556,7 @@
             this.buttonImport.TabIndex = 0;
             this.buttonImport.Text = "Import Waifus";
             this.buttonImport.UseVisualStyleBackColor = true;
-            this.buttonImport.Click += new System.EventHandler(this.button2_Click);
+            this.buttonImport.Click += new System.EventHandler(this.buttonImport_Click);
             // 
             // labelCount
             // 
@@ -582,72 +600,6 @@
             this.loadToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.loadToolStripMenuItem.Text = "Reload Waifus";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
-            // 
-            // colOutName1
-            // 
-            this.colOutName1.HeaderText = "Name 1";
-            this.colOutName1.Name = "colOutName1";
-            this.colOutName1.ReadOnly = true;
-            // 
-            // colOutName2
-            // 
-            this.colOutName2.HeaderText = "Name 2";
-            this.colOutName2.Name = "colOutName2";
-            this.colOutName2.ReadOnly = true;
-            // 
-            // colOutName3
-            // 
-            this.colOutName3.HeaderText = "Name 3";
-            this.colOutName3.Name = "colOutName3";
-            this.colOutName3.ReadOnly = true;
-            // 
-            // colOutName4
-            // 
-            this.colOutName4.HeaderText = "Name 4";
-            this.colOutName4.Name = "colOutName4";
-            this.colOutName4.ReadOnly = true;
-            // 
-            // colOutName5
-            // 
-            this.colOutName5.HeaderText = "Name 5";
-            this.colOutName5.Name = "colOutName5";
-            this.colOutName5.ReadOnly = true;
-            // 
-            // colOutName6
-            // 
-            this.colOutName6.HeaderText = "Name 6";
-            this.colOutName6.Name = "colOutName6";
-            this.colOutName6.ReadOnly = true;
-            // 
-            // colOutPerception
-            // 
-            this.colOutPerception.HeaderText = "Perception";
-            this.colOutPerception.Name = "colOutPerception";
-            this.colOutPerception.ReadOnly = true;
-            // 
-            // colOutCharisma
-            // 
-            this.colOutCharisma.HeaderText = "Charisma";
-            this.colOutCharisma.Name = "colOutCharisma";
-            this.colOutCharisma.ReadOnly = true;
-            // 
-            // colOutLuck
-            // 
-            this.colOutLuck.HeaderText = "Luck";
-            this.colOutLuck.Name = "colOutLuck";
-            this.colOutLuck.ReadOnly = true;
-            // 
-            // colOutVariance
-            // 
-            this.colOutVariance.HeaderText = "Variance";
-            this.colOutVariance.Name = "colOutVariance";
-            this.colOutVariance.ReadOnly = true;
-            // 
-            // colOutLevel
-            // 
-            this.colOutLevel.HeaderText = "Level";
-            this.colOutLevel.Name = "colOutLevel";
-            this.colOutLevel.ReadOnly = true;
             // 
             // Form1
             // 
@@ -702,8 +654,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton radioCPL;
-        private System.Windows.Forms.RadioButton radioPLC;
         private System.Windows.Forms.RadioButton radioPCL;
         private System.Windows.Forms.RadioButton radio101010;
         private System.Windows.Forms.RadioButton radio999;
@@ -711,10 +661,6 @@
         private System.Windows.Forms.RadioButton radio777;
         private System.Windows.Forms.Button buttonGenerate;
         private System.Windows.Forms.DataGridView dataGridViewOutput;
-        private System.Windows.Forms.RadioButton radioLCP;
-        private System.Windows.Forms.RadioButton radioLPC;
-        private System.Windows.Forms.RadioButton radioCLP;
-        private System.Windows.Forms.CheckBox checkVariance;
         private System.Windows.Forms.CheckBox checkDistinct;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textMax;
@@ -745,5 +691,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colOutLuck;
         private System.Windows.Forms.DataGridViewTextBoxColumn colOutVariance;
         private System.Windows.Forms.DataGridViewTextBoxColumn colOutLevel;
+        private System.Windows.Forms.ListView listView1;
     }
 }

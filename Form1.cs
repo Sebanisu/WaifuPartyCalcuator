@@ -77,11 +77,11 @@ namespace WaifuPartyCalcuator
                 return;
             }
             dataGridViewInput.Rows.Clear();
-            foreach (string row in inputCsv.Skip(1))
+            foreach (string row in inputCsv.Skip(1)) //skip headers
             {
                 if (row.Trim().Length == 0) continue;
                 int rI = dataGridViewInput.Rows.Add();
-                foreach (var cell in row.Split(',').Select((v, i) => new { Value = v.Trim('"'), Index = i }))
+                foreach (var cell in row.Split(',').Take(dataGridViewInput.Columns.Count).Select((v, i) => new { Value = v.Trim('"'), Index = i }))
                 {
                     dataGridViewInput.Rows[rI].Cells[cell.Index].Value = cell.Value;
                 }
@@ -210,45 +210,106 @@ namespace WaifuPartyCalcuator
                         continue;
                     }
                     tmpRow.Variance = getVariance(new int[] { tmpRow.P, tmpRow.C, tmpRow.L });
-                    if (!(radio777.Checked || radio888.Checked || radio999.Checked || radio101010.Checked || checkDistinct.Checked) && checkVariance.Checked && tmpRow.Variance <= float.Epsilon)// filter out zero matches when including Variance.
-                    {
-                        continue;
-                    }
+                    //if (!(radio777.Checked || radio888.Checked || radio999.Checked || radio101010.Checked || checkDistinct.Checked) && tmpRow.Variance <= float.Epsilon)// filter out zero matches when including Variance.
+                    //{
+                    //    continue;
+                    //}
                 }
                 yield return tmpRow;
             }
         }
 
+        private static Func<tmpRowData, int> funcP = (x => x.P);
+        private static Func<tmpRowData, int> funcC = (x => x.C);
+        private static Func<tmpRowData, int> funcL = (x => x.L);
+        private static Func<tmpRowData, float> funcVariance = (x => x.Variance);
+        private static Func<tmpRowData, int> funcLevel = (x => x.Level);
+        private IOrderedEnumerable<tmpRowData> Sort(IEnumerable<tmpRowData> tmpRows)
+        {
+            IEnumerable<ListViewItem> sortItems = GetSortItems();
+            ListViewItem? current = sortItems.FirstOrDefault();
+            if (current != null)
+            {
+                if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return Sort(tmpRows.OrderByDescending(funcP), sortItems.Skip(1));
+                }
+                if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return Sort(tmpRows.OrderByDescending(funcC), sortItems.Skip(1));
+                }
+                if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return Sort(tmpRows.OrderByDescending(funcL), sortItems.Skip(1));
+                }
+                if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return Sort(tmpRows.OrderByDescending(funcLevel), sortItems.Skip(1));
+                }
+            }
+            return Sort(tmpRows.OrderBy(funcVariance), sortItems.Skip(1));
+        }
+        private static IOrderedEnumerable<tmpRowData> Sort(IOrderedEnumerable<tmpRowData> tmpRows, IEnumerable<ListViewItem> sortItems)
+        {
+            foreach (ListViewItem? current in sortItems)
+            {
+                if (current != null)
+                {
+                    if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        tmpRows = tmpRows.ThenByDescending(funcP);
+                    }
+                    if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        tmpRows = tmpRows.ThenByDescending(funcC);
+                    }
+                    if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        tmpRows = tmpRows.ThenByDescending(funcL);
+                    }
+                    if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        tmpRows = tmpRows.ThenByDescending(funcLevel);
+                    }
+                    if (current.Text.Equals("Variance", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        tmpRows = tmpRows.ThenBy(funcVariance);
+                    }
+                }
+            }
+            return tmpRows;
+        }
         private IOrderedEnumerable<tmpRowData> GetSorted(IEnumerable<tmpRowData> tmpRows)
         {
-            if (!checkVariance.Checked)
-            {
-                if (radioPLC.Checked)
-                    return tmpRows.OrderByDescending(x => x.P).ThenByDescending(x => x.L).ThenByDescending(x => x.C);
-                if (radioCPL.Checked)
-                    return tmpRows.OrderByDescending(x => x.C).ThenByDescending(x => x.P).ThenByDescending(x => x.L);
-                if (radioCLP.Checked)
-                    return tmpRows.OrderByDescending(x => x.C).ThenByDescending(x => x.L).ThenByDescending(x => x.P);
-                if (radioLPC.Checked)
-                    return tmpRows.OrderByDescending(x => x.L).ThenByDescending(x => x.P).ThenByDescending(x => x.C);
-                if (radioLCP.Checked)
-                    return tmpRows.OrderByDescending(x => x.L).ThenByDescending(x => x.C).ThenByDescending(x => x.P);
-                //if (radioPCL.Checked) //else
-                return tmpRows.OrderByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
-            }
+            return Sort(tmpRows);
+            //if (!checkVariance.Checked)
+            //{
+            //    if (radioPLC.Checked)
+            //        return tmpRows.OrderByDescending(x => x.P).ThenByDescending(x => x.L).ThenByDescending(x => x.C);
+            //    if (radioCPL.Checked)
+            //        return tmpRows.OrderByDescending(x => x.C).ThenByDescending(x => x.P).ThenByDescending(x => x.L);
+            //    if (radioCLP.Checked)
+            //        return tmpRows.OrderByDescending(x => x.C).ThenByDescending(x => x.L).ThenByDescending(x => x.P);
+            //    if (radioLPC.Checked)
+            //        return tmpRows.OrderByDescending(x => x.L).ThenByDescending(x => x.P).ThenByDescending(x => x.C);
+            //    if (radioLCP.Checked)
+            //        return tmpRows.OrderByDescending(x => x.L).ThenByDescending(x => x.C).ThenByDescending(x => x.P);
+            //    //if (radioPCL.Checked) //else
+            //    return tmpRows.OrderByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
+            //}
 
-            if (radioPLC.Checked)
-                return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.L).ThenByDescending(x => x.C);
-            if (radioCPL.Checked)
-                return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.C).ThenByDescending(x => x.P).ThenByDescending(x => x.L);
-            if (radioCLP.Checked)
-                return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.C).ThenByDescending(x => x.L).ThenByDescending(x => x.P);
-            if (radioLPC.Checked)
-                return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.L).ThenByDescending(x => x.P).ThenByDescending(x => x.C);
-            if (radioLCP.Checked)
-                return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.L).ThenByDescending(x => x.C).ThenByDescending(x => x.P);
-            //if (radioPCL.Checked) //else
-            return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
+            //if (radioPLC.Checked)
+            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.L).ThenByDescending(x => x.C);
+            //if (radioCPL.Checked)
+            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.C).ThenByDescending(x => x.P).ThenByDescending(x => x.L);
+            //if (radioCLP.Checked)
+            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.C).ThenByDescending(x => x.L).ThenByDescending(x => x.P);
+            //if (radioLPC.Checked)
+            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.L).ThenByDescending(x => x.P).ThenByDescending(x => x.C);
+            //if (radioLCP.Checked)
+            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.L).ThenByDescending(x => x.C).ThenByDescending(x => x.P);
+            ////if (radioPCL.Checked) //else
+            //return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
         }
 
         private IEnumerable<tmpRowData> Dedupe(IEnumerable<tmpRowData> tmpRows)
@@ -258,7 +319,7 @@ namespace WaifuPartyCalcuator
             return tmpRows.Select(x => x);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonGenerate_Click(object sender, EventArgs e)
         {
             const int partySize = 6;
             int columnCount = dataGridViewInput.Columns.Count;
@@ -291,7 +352,7 @@ namespace WaifuPartyCalcuator
             dataGridViewOutput.Refresh();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonImport_Click(object sender, EventArgs e)
         {
             Regex regex;
             try
@@ -354,5 +415,50 @@ namespace WaifuPartyCalcuator
         {
             UpdateCount();
         }
+        IEnumerable<ListViewItem> GetSortItems()
+        {
+            foreach(ListViewItem? item in listView1.Items)
+            {
+                if(item != null)
+                    yield return item;
+            }
+        }
+        ListViewItem? heldDownItem;
+        Point heldDownPoint;
+        //MouseDown event handler for your listView1
+        private void listView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            //listView1.AutoArrange = false;
+            heldDownItem = listView1.GetItemAt(e.X, e.Y);
+            if (heldDownItem != null)
+            {
+                heldDownPoint = new Point(e.X - heldDownItem.Position.X,
+                                          e.Y - heldDownItem.Position.Y);
+            }
+        }
+        //MouseMove event handler for your listView1
+        private void listView1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (heldDownItem != null)
+            {
+                heldDownItem.Position = new Point(e.Location.X - heldDownPoint.X,
+                                                  e.Location.Y - heldDownPoint.Y);
+               
+            }
+        }
+        //MouseUp event handler for your listView1
+        private void listView1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (heldDownItem != null)
+            {
+                listView1.Items.Remove(heldDownItem);
+                var new_order = GetSortItems().Concat(new ListViewItem[] { heldDownItem }).OrderBy(x => x.Position.Y).ThenBy(x => x.Position.X).ToArray();
+                listView1.Items.Clear();
+                listView1.Items.AddRange(new_order);
+                heldDownItem = null;
+                //listView1.AutoArrange = true;         
+            }
+        }
+
     }
 }
