@@ -198,7 +198,7 @@ namespace WaifuPartyCalcuator
                 int GetCellValue(int currenti, DataGridViewRow row) { int.TryParse(row.Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; }
                 double GetCombinedValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).Average() / 2.0;
                 double GetFirstValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).First() / 2.0;
-                int GetProcessedValue(int currenti) => (int)Math.Round(partyMembers.Select(row => GetFirstValue(currenti, row) + GetCombinedValue(currenti, row)).First(), 0);
+                int GetProcessedValue(int currenti) => (int)Math.Ceiling(partyMembers.Select(row => GetFirstValue(currenti, row) + GetCombinedValue(currenti, row)).First());
                 tmpRow.P = GetProcessedValue(ColPos.Perception);
                 tmpRow.C = GetProcessedValue(ColPos.Charisma);
                 tmpRow.L = GetProcessedValue(ColPos.Luck);
