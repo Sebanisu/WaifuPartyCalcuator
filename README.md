@@ -1,4 +1,4 @@
-# WaifuPartyCalcuator
+# Waifu Party Calculator
 To help create optimal parties for WaifuGame
 
 ## Screen To add or edit your Waifus
