@@ -324,15 +324,15 @@ namespace WaifuPartyCalcuator
 
         private void buttonGenerate_Click(object sender, EventArgs e)
         {
-            const string wait = "Please Wait...";
-            string button_string_value = buttonGenerate.Text;
-            buttonGenerate.Text = wait;
-            buttonGenerate.Enabled = false;
             const int partySize = 6;
             int columnCount = dataGridViewInput.Columns.Count;
             var filteredRows = FilteredRows().ToList();
             int rowCount = filteredRows.Count;
             if (columnCount <= 0 || rowCount <= 0) return;
+            const string wait = "Please Wait...";
+            string button_string_value = buttonGenerate.Text;
+            buttonGenerate.Text = wait;
+            buttonGenerate.Enabled = false;
             var rRows = Enumerable.Range(0, rowCount);
             //var rPartyRowIndex = GetPermutations(rRows, partySize);
             dataGridViewOutput.Rows.Clear();
