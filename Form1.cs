@@ -126,6 +126,7 @@ namespace WaifuPartyCalcuator
                     yield return new T[] { item };
                 else
                 {
+                    Application.DoEvents();
                     foreach (var result in GetPermutations(items.Where(x => x != null && !EqualityComparer<T>.Default.Equals(x, item)), count - 1))
                         yield return new T[] { item }.Concat(result);
                 }
@@ -169,6 +170,7 @@ namespace WaifuPartyCalcuator
                 {
                     continue;
                 }
+                Application.DoEvents();
                 yield return row;
             }
         }
@@ -196,9 +198,9 @@ namespace WaifuPartyCalcuator
                     tmpRow.Names[data.CellIndex] = data.Row.Cells[0].Value?.ToString() ?? "";
                 }
                 int GetCellValue(int currenti, DataGridViewRow row) { int.TryParse(row.Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; }
-                double GetCombinedValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).Average() / 2.0;
+                double GetCombinedValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).Skip(1).Average() / 2.0;
                 double GetFirstValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).First() / 2.0;
-                int GetProcessedValue(int currenti) => (int)partyMembers.Select(row => Math.Floor(GetFirstValue(currenti, row)) + Math.Ceiling(GetCombinedValue(currenti, row))).First();
+                int GetProcessedValue(int currenti) => (int)partyMembers.Select(row => Math.Ceiling(GetFirstValue(currenti, row) + GetCombinedValue(currenti, row))).First();
                 tmpRow.P = GetProcessedValue(ColPos.Perception);
                 tmpRow.C = GetProcessedValue(ColPos.Charisma);
                 tmpRow.L = GetProcessedValue(ColPos.Luck);
@@ -215,6 +217,7 @@ namespace WaifuPartyCalcuator
                     //    continue;
                     //}
                 }
+                Application.DoEvents();
                 yield return tmpRow;
             }
         }
@@ -321,6 +324,10 @@ namespace WaifuPartyCalcuator
 
         private void buttonGenerate_Click(object sender, EventArgs e)
         {
+            const string wait = "Please Wait...";
+            string button_string_value = buttonGenerate.Text;
+            buttonGenerate.Text = wait;
+            buttonGenerate.Enabled = false;
             const int partySize = 6;
             int columnCount = dataGridViewInput.Columns.Count;
             var filteredRows = FilteredRows().ToList();
@@ -348,8 +355,11 @@ namespace WaifuPartyCalcuator
                     AppendNumberf(ColPos.Variance, tmpRow.Variance);
                     AppendNumber(ColPos.Level, tmpRow.Level);
                 }
+                Application.DoEvents();
             }
             dataGridViewOutput.Refresh();
+            buttonGenerate.Text = button_string_value;
+            buttonGenerate.Enabled = true;
         }
 
         private void buttonImport_Click(object sender, EventArgs e)
