@@ -29,7 +29,7 @@ namespace WaifuPartyCalcuator
             InitializeComponent();
         }
 
-        private float getVariance(IEnumerable<int> rRow)
+        static private float GenerateVariance(IEnumerable<int> rRow)
         {
             float fMean = rRow.Sum() / 3.0f;
             return (float)(rRow.Sum(i => Math.Pow(i - fMean, 2.0)) / 3.0f);
@@ -38,7 +38,7 @@ namespace WaifuPartyCalcuator
         {
             if (e.RowIndex < 0) return;
             var rRow = Enumerable.Range(1, 3).Select(i => { int.TryParse(dataGridViewInput.Rows[e.RowIndex].Cells[i].Value?.ToString() ?? "0", out int v); if (v > 0) return v; return 0; });
-            dataGridViewInput.Rows[e.RowIndex].Cells[4].Value = getVariance(rRow).ToString("F3", CultureInfo.InvariantCulture);
+            dataGridViewInput.Rows[e.RowIndex].Cells[4].Value = GenerateVariance(rRow).ToString("F3", CultureInfo.InvariantCulture);
         }
 
 
@@ -147,39 +147,84 @@ namespace WaifuPartyCalcuator
         //        .SelectMany(t => list.Where(o => !t.Contains(o)),
         //            (t1, t2) => t1.Concat(new T[] { t2 }));
         //}
-        private struct tmpRowData
+        
+        private interface IRawRowData
         {
-            public string[] Names;
-            public int P, C, L, Level;
+            public int Perception { get; }
+            public int Charisma { get; }
+            public int Luck { get; }
+            public int Level { get; }
+            public float Variance { get; }
+        }
+        private static int GetPerception(IRawRowData x) => x.Perception;
+        private static int GetCharisma(IRawRowData x) => x.Charisma;
+        private static int GetLuck(IRawRowData x) => x.Luck;
+        private static float GetVariance(IRawRowData x) => x.Variance;
+        private static int GetLevel(IRawRowData x) => x.Level;
 
-            public float Variance;
+        private class RawOutputRowData : IRawRowData
+        {
+            public const int partySize = 6;
+            public RawOutputRowData(IEnumerable<RawInputRowData> partyMembers)
+            {
+                m_names = new string[partySize];
+
+                foreach (var data in partyMembers.Select((row, coli) => new { Row = row, CellIndex = coli }))
+                {
+                    m_names[data.CellIndex] = data.Row.Name;
+                }
+                double GetCombinedValue(Func<IRawRowData, int> func, IRawRowData row) => partyMembers.Select(row => func(row)).Skip(1).Average() / 2.0;
+                float GetFirstValue(Func<IRawRowData, int> func, IRawRowData row) => partyMembers.Select(row => func(row)).First() / 2.0f;
+                int GetProcessedValue(Func<IRawRowData, int> func) => (int)partyMembers.Select(row => Math.Ceiling(GetFirstValue(func, row) + GetCombinedValue(func, row))).First();
+                Perception = GetProcessedValue(GetPerception);
+                Charisma = GetProcessedValue(GetCharisma);
+                Luck = GetProcessedValue(GetLuck);
+                Level = GetProcessedValue(GetLevel);
+
+                Variance = GenerateVariance(new int[] { Perception, Charisma, Luck });
+            }
+            private string[] m_names;
+            public IReadOnlyList<string> Names { get => m_names; }
+            public int Perception { get; }
+            public int Charisma { get; }
+            public int Luck { get; }
+            public int Level { get; }
+            public float Variance { get; }
+        }
+        private class RawInputRowData : IRawRowData
+        {
+            static private int IGetCellValue(int currenti, DataGridViewRow row) { int.TryParse(row.Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; }
+            static private float FGetCellValue(int currenti, DataGridViewRow row) { float.TryParse(row.Cells[currenti].Value?.ToString() ?? "0.0", out float outf); if (outf > 0.0f) return outf; return 0.0f; }
+            public RawInputRowData(DataGridViewRow row)               
+            {
+                Name = row.Cells[ColPos.Name].Value?.ToString() ?? "";
+                Perception = IGetCellValue(ColPos.Perception, row);
+                Charisma = IGetCellValue(ColPos.Charisma, row);
+                Luck = IGetCellValue(ColPos.Luck, row);
+                Level = IGetCellValue(ColPos.Level, row);
+                Variance = FGetCellValue(ColPos.Variance, row);
+            }           
+
+            public string Name { get; }
+            public int Perception { get; }
+            public int Charisma { get; }
+            public int Luck { get; }
+            public int Level { get; }
+            public float Variance { get; }
         }
 
-        private IEnumerable<DataGridViewRow> FilteredRows()
+        private ParallelQuery<RawInputRowData> FilterInputRows()
         {
-            foreach (DataGridViewRow? row in dataGridViewInput.Rows)
-            {
-                if (row == null) continue;
-                //if ((row.Cells[ColPos.Name].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                //if ((row.Cells[ColPos.Perception].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                //if ((row.Cells[ColPos.Charisma].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                //if ((row.Cells[ColPos.Luck].Value?.ToString() ?? "").Trim().Length == 0) continue;
-                if ((row.Cells[ColPos.Perception].Value?.ToString() ?? "0") == "0" &&
+            return from DataGridViewRow? row in dataGridViewInput.Rows.AsParallel()
+                   where row != null && !((row.Cells[ColPos.Perception].Value?.ToString() ?? "0") == "0" &&
                 (row.Cells[ColPos.Charisma].Value?.ToString() ?? "0") == "0" &&
                 (row.Cells[ColPos.Luck].Value?.ToString() ?? "0") == "0")
-                {
-                    continue;
-                }
-                Application.DoEvents();
-                yield return row;
-            }
+                   select new RawInputRowData(row);
         }
 
-        private IEnumerable<tmpRowData> GetRowData(List<DataGridViewRow> filteredRows)
+        private IEnumerable<RawOutputRowData> GetRowData(IEnumerable<RawInputRowData> filteredRows)
         {
-
-            const int partySize = 6;
-            foreach (IEnumerable<DataGridViewRow> partyMembers in GetPermutationsFirst(filteredRows, partySize))
+            foreach (IEnumerable<RawInputRowData> partyMembers in GetPermutationsFirst(filteredRows, RawOutputRowData.partySize))
             {
                 //if (rowOfIndexes.Any(i => (filteredRows[i].Cells[0].Value?.ToString() ?? "").Trim().Length == 0))
                 //{
@@ -189,29 +234,14 @@ namespace WaifuPartyCalcuator
                 //{
                 //    continue;
                 //}
-                tmpRowData tmpRow = new tmpRowData
-                {
-                    Names = new string[partySize]
-                };
-                foreach (var data in partyMembers.Select((row, coli) => new { Row = row, CellIndex = coli }))
-                {
-                    tmpRow.Names[data.CellIndex] = data.Row.Cells[0].Value?.ToString() ?? "";
-                }
-                int GetCellValue(int currenti, DataGridViewRow row) { int.TryParse(row.Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; }
-                double GetCombinedValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).Skip(1).Average() / 2.0;
-                double GetFirstValue(int currenti, DataGridViewRow row) => partyMembers.Select(row => GetCellValue(currenti, row)).First() / 2.0;
-                int GetProcessedValue(int currenti) => (int)partyMembers.Select(row => Math.Ceiling(GetFirstValue(currenti, row) + GetCombinedValue(currenti, row))).First();
-                tmpRow.P = GetProcessedValue(ColPos.Perception);
-                tmpRow.C = GetProcessedValue(ColPos.Charisma);
-                tmpRow.L = GetProcessedValue(ColPos.Luck);
-                tmpRow.Level = GetProcessedValue(ColPos.Level);
-                bool checkNotMatchNumber(RadioButton radio, int i) => radio.Checked && (tmpRow.P != i || tmpRow.C != i || tmpRow.L != i);
+                RawOutputRowData tmpRow = new RawOutputRowData(partyMembers);
+
+                bool checkNotMatchNumber(RadioButton radio, int i) => radio.Checked && (tmpRow.Perception != i || tmpRow.Charisma != i || tmpRow.Luck != i);
                 { // filter
                     if (checkNotMatchNumber(radio777, 7) || checkNotMatchNumber(radio888, 8) || checkNotMatchNumber(radio999, 9) || checkNotMatchNumber(radio101010, 10))
                     {
                         continue;
                     }
-                    tmpRow.Variance = getVariance(new int[] { tmpRow.P, tmpRow.C, tmpRow.L });
                     //if (!(radio777.Checked || radio888.Checked || radio999.Checked || radio101010.Checked || checkDistinct.Checked) && tmpRow.Variance <= float.Epsilon)// filter out zero matches when including Variance.
                     //{
                     //    continue;
@@ -222,12 +252,7 @@ namespace WaifuPartyCalcuator
             }
         }
 
-        private static Func<tmpRowData, int> funcP = (x => x.P);
-        private static Func<tmpRowData, int> funcC = (x => x.C);
-        private static Func<tmpRowData, int> funcL = (x => x.L);
-        private static Func<tmpRowData, float> funcVariance = (x => x.Variance);
-        private static Func<tmpRowData, int> funcLevel = (x => x.Level);
-        private IOrderedEnumerable<tmpRowData> Sort(IEnumerable<tmpRowData> tmpRows)
+        private IOrderedEnumerable<RawOutputRowData> Sort(IEnumerable<RawOutputRowData> tmpRows)
         {
             IEnumerable<ListViewItem> sortItems = GetSortItems();
             ListViewItem? current = sortItems.FirstOrDefault();
@@ -235,24 +260,24 @@ namespace WaifuPartyCalcuator
             {
                 if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return Sort(tmpRows.OrderByDescending(funcP), sortItems.Skip(1));
+                    return Sort(tmpRows.OrderByDescending(GetPerception), sortItems.Skip(1));
                 }
                 if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return Sort(tmpRows.OrderByDescending(funcC), sortItems.Skip(1));
+                    return Sort(tmpRows.OrderByDescending(GetCharisma), sortItems.Skip(1));
                 }
                 if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return Sort(tmpRows.OrderByDescending(funcL), sortItems.Skip(1));
+                    return Sort(tmpRows.OrderByDescending(GetLuck), sortItems.Skip(1));
                 }
                 if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return Sort(tmpRows.OrderByDescending(funcLevel), sortItems.Skip(1));
+                    return Sort(tmpRows.OrderByDescending(GetLevel), sortItems.Skip(1));
                 }
             }
-            return Sort(tmpRows.OrderBy(funcVariance), sortItems.Skip(1));
+            return Sort(tmpRows.OrderBy(GetVariance), sortItems.Skip(1));
         }
-        private static IOrderedEnumerable<tmpRowData> Sort(IOrderedEnumerable<tmpRowData> tmpRows, IEnumerable<ListViewItem> sortItems)
+        private static IOrderedEnumerable<RawOutputRowData> Sort(IOrderedEnumerable<RawOutputRowData> tmpRows, IEnumerable<ListViewItem> sortItems)
         {
             foreach (ListViewItem? current in sortItems)
             {
@@ -260,29 +285,29 @@ namespace WaifuPartyCalcuator
                 {
                     if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        tmpRows = tmpRows.ThenByDescending(funcP);
+                        tmpRows = tmpRows.ThenByDescending(GetPerception);
                     }
                     if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        tmpRows = tmpRows.ThenByDescending(funcC);
+                        tmpRows = tmpRows.ThenByDescending(GetCharisma);
                     }
                     if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        tmpRows = tmpRows.ThenByDescending(funcL);
+                        tmpRows = tmpRows.ThenByDescending(GetLuck);
                     }
                     if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        tmpRows = tmpRows.ThenByDescending(funcLevel);
+                        tmpRows = tmpRows.ThenByDescending(GetLevel);
                     }
                     if (current.Text.Equals("Variance", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        tmpRows = tmpRows.ThenBy(funcVariance);
+                        tmpRows = tmpRows.ThenBy(GetVariance);
                     }
                 }
             }
             return tmpRows;
         }
-        private IOrderedEnumerable<tmpRowData> GetSorted(IEnumerable<tmpRowData> tmpRows)
+        private IOrderedEnumerable<RawOutputRowData> GetSorted(IEnumerable<RawOutputRowData> tmpRows)
         {
             return Sort(tmpRows);
             //if (!checkVariance.Checked)
@@ -315,10 +340,10 @@ namespace WaifuPartyCalcuator
             //return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
         }
 
-        private IEnumerable<tmpRowData> Dedupe(IEnumerable<tmpRowData> tmpRows)
+        private IEnumerable<RawOutputRowData> Dedupe(IEnumerable<RawOutputRowData> tmpRows)
         {
             if (checkDistinct.Checked)
-                return tmpRows.GroupBy(x => new { x.P, x.C, x.L, x.Level }).Select(x => x.FirstOrDefault());
+                return tmpRows.GroupBy(x => new { x.Perception, x.Charisma, x.Luck, x.Level }).Select(x => x.FirstOrDefault());
             return tmpRows.Select(x => x);
         }
 
@@ -326,7 +351,7 @@ namespace WaifuPartyCalcuator
         {
             const int partySize = 6;
             int columnCount = dataGridViewInput.Columns.Count;
-            var filteredRows = FilteredRows().ToList();
+            var filteredRows = FilterInputRows().ToList();
             int rowCount = filteredRows.Count;
             if (columnCount <= 0 || rowCount <= 0) return;
             const string wait = "Please Wait...";
@@ -334,7 +359,6 @@ namespace WaifuPartyCalcuator
             buttonGenerate.Text = wait;
             buttonGenerate.Enabled = false;
             var rRows = Enumerable.Range(0, rowCount);
-            //var rPartyRowIndex = GetPermutations(rRows, partySize);
             dataGridViewOutput.Rows.Clear();
             int.TryParse(textMax.Text, out int max);
             if (max <= 1)
@@ -349,9 +373,9 @@ namespace WaifuPartyCalcuator
                     }
                     void AppendNumber(int currenti, int value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString();
                     void AppendNumberf(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString("F3", CultureInfo.InvariantCulture);
-                    AppendNumber(ColPos.Perception, tmpRow.P);
-                    AppendNumber(ColPos.Charisma, tmpRow.C);
-                    AppendNumber(ColPos.Luck, tmpRow.L);
+                    AppendNumber(ColPos.Perception, tmpRow.Perception);
+                    AppendNumber(ColPos.Charisma, tmpRow.Charisma);
+                    AppendNumber(ColPos.Luck, tmpRow.Luck);
                     AppendNumberf(ColPos.Variance, tmpRow.Variance);
                     AppendNumber(ColPos.Level, tmpRow.Level);
                 }
@@ -427,9 +451,9 @@ namespace WaifuPartyCalcuator
         }
         IEnumerable<ListViewItem> GetSortItems()
         {
-            foreach(ListViewItem? item in listView1.Items)
+            foreach (ListViewItem? item in listView1.Items)
             {
-                if(item != null)
+                if (item != null)
                     yield return item;
             }
         }
@@ -453,7 +477,7 @@ namespace WaifuPartyCalcuator
             {
                 heldDownItem.Position = new Point(e.Location.X - heldDownPoint.X,
                                                   e.Location.Y - heldDownPoint.Y);
-               
+
             }
         }
         //MouseUp event handler for your listView1
