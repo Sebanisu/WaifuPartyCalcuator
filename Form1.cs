@@ -31,8 +31,9 @@ namespace WaifuPartyCalcuator
 
         static private float GenerateVariance(IEnumerable<int> rRow)
         {
-            float fMean = rRow.Sum() / 3.0f;
-            return (float)(rRow.Sum(i => Math.Pow(i - fMean, 2.0)) / 3.0f);
+            float fCount = 3.0f;//rRow.Count();
+            float fMean = rRow.Sum() / fCount;
+            return (float)(rRow.Sum(i => Math.Pow(i - fMean, 2.0)) / fCount);
         }
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
