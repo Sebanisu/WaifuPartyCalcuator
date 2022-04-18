@@ -109,7 +109,7 @@
     <value>True</value>
   </metadata>
   <data name="textRegex.Text" xml:space="preserve">
-    <value>&lt;h4&gt;[\s\n]+(?&lt;Name&gt;.+?\s#\d+)[\s\n]+&lt;span[\s\n]+class=\"badge[\s\n]+badge-primary\"&gt;Lv\.(?&lt;Level&gt;\d+)&lt;\/span&gt;[\s\n]+&lt;\/h4&gt;[\s\n]+&lt;p[\s\n]+class=\"mb-1\"&gt;[\s\n]+&lt;strong&gt;S:[\s\n]+&lt;\/strong&gt;[\s\n]+\d+[\s\n]+&lt;strong&gt;P:[\s\n]+&lt;\/strong&gt;[\s\n]+(?&lt;P&gt;\d+)[\s\n]+&lt;strong&gt;E:[\s\n]+&lt;\/strong&gt;[\s\n]+\d+[\s\n]+&lt;strong&gt;C:[\s\n]+&lt;\/strong&gt;[\s\n]+(?&lt;C&gt;\d+)[\s\n]+&lt;strong&gt;I:[\s\n]+&lt;\/strong&gt;[\s\n]+\d+[\s\n]+&lt;strong&gt;A:[\s\n]+&lt;\/strong&gt;[\s\n]+\d+[\s\n]+&lt;strong&gt;L:[\s\n]+&lt;\/strong&gt;[\s\n]+(?&lt;L&gt;\d+)[\s\n]+&lt;\/p&gt;</value>
+    <value>&lt;h4&gt;[\s\n]+(?&lt;Name&gt;.+?\s#\d+)[\s\n]+&lt;span[\s\n]+class=\"badge[\s\n]+badge-primary\"&gt;Lv\.(?&lt;Level&gt;\d+)&lt;\/span&gt;[\s\n]+&lt;\/h4&gt;[\s\n]+&lt;p[\s\n]+class=\"mb-1\"&gt;[\s\n]+&lt;strong&gt;S:[\s\n]+&lt;\/strong&gt;[\s\n]+\d+[\s\n]+&lt;strong&gt;P:[\s\n]+&lt;\/strong&gt;[\s\n]+(?&lt;P&gt;\d+)[\s\n]+&lt;strong&gt;E:[\s\n]+&lt;\/strong&gt;[\s\n]+\d+[\s\n]+&lt;strong&gt;C:[\s\n]+&lt;\/strong&gt;[\s\n]+(?&lt;C&gt;\d+)[\s\n]+&lt;strong&gt;I:[\s\n]+&lt;\/strong&gt;[\s\n]+\d+[\s\n]+&lt;strong&gt;A:[\s\n]+&lt;\/strong&gt;[\s\n]+\d+[\s\n]+&lt;strong&gt;L:[\s\n]+&lt;\/strong&gt;[\s\n]+(?&lt;L&gt;\d+)[\s\n]+</value>
   </data>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
