@@ -167,7 +167,7 @@ namespace WaifuPartyCalcuator
         private class RawOutputRowData : IRawRowData
         {
             public const int partySize = 6;
-            public RawOutputRowData(IEnumerable<RawInputRowData> partyMembers)
+            public RawOutputRowData(RawInputRowData[] partyMembers)
             {
                 m_names = new string[partySize];
 
@@ -226,7 +226,7 @@ namespace WaifuPartyCalcuator
 
         private IEnumerable<RawOutputRowData> GetRowData(IEnumerable<RawInputRowData> filteredRows)
         {
-            foreach (IEnumerable<RawInputRowData> partyMembers in GetPermutationsFirst(filteredRows, RawOutputRowData.partySize))
+            foreach (var partyMembers in GetPermutationsFirst(filteredRows, RawOutputRowData.partySize))
             {
                 //if (rowOfIndexes.Any(i => (filteredRows[i].Cells[0].Value?.ToString() ?? "").Trim().Length == 0))
                 //{
@@ -236,7 +236,7 @@ namespace WaifuPartyCalcuator
                 //{
                 //    continue;
                 //}
-                RawOutputRowData tmpRow = new RawOutputRowData(partyMembers);
+                RawOutputRowData tmpRow = new RawOutputRowData(partyMembers.ToArray());
 
                 bool checkNotMatchNumber(RadioButton radio, int i) => radio.Checked && (tmpRow.Perception != i || tmpRow.Charisma != i || tmpRow.Luck != i);
                 { // filter
@@ -348,10 +348,39 @@ namespace WaifuPartyCalcuator
                 return tmpRows.GroupBy(x => new { x.Perception, x.Charisma, x.Luck, x.Level }).Select(x => x.FirstOrDefault());
             return tmpRows.Select(x => x);
         }
-
+        private IEnumerable<RawInputRowData[]> newGetOutputRow(List<RawInputRowData> filteredRows)
+        {
+            long combinations = 0;
+            var q = filteredRows.AsParallel();
+                foreach (var item1 in q)
+                {
+                    var less2filteredrows = q.Skip(1);
+                    foreach (var item2 in less2filteredrows)
+                    {
+                        var less3filteredrows = less2filteredrows.Skip(1);
+                        foreach (var item3 in less3filteredrows)
+                        {
+                            var less4filteredrows = less3filteredrows.Skip(1);
+                            foreach (var item4 in less4filteredrows)
+                            {
+                                var less5filteredrows = less4filteredrows.Skip(1);
+                                foreach (var item5 in less5filteredrows)
+                                {
+                                    yield return new[] { item1, item2, item3, item4, item5 };
+                                    if (++combinations % 1000000 == 0)
+                                        Trace.WriteLine(combinations);
+                                    //Trace.WriteLine(combinations + ": " + item0.Name + ", " + item1.Name + ", " + item2.Name + ", " + item3.Name + ", " + item4.Name + ", " + item5.Name);
+                                }
+                            }
+                        }
+                    }
+                }
+            
+            Trace.WriteLine("Combinations Count = " + combinations);
+        }
         private void buttonGenerate_Click(object sender, EventArgs e)
         {
-            const int partySize = 6;
+            //const int partySize = 6;
             int columnCount = dataGridViewInput.Columns.Count;
             var filteredRows = FilterInputRows().ToList();
             int rowCount = filteredRows.Count;
@@ -365,35 +394,13 @@ namespace WaifuPartyCalcuator
                 Trace.WriteLine(row.Name + ", " + row.Level + ", " + row.Perception + ", " + row.Charisma + ", " + row.Luck);
             }
             Trace.WriteLine("FiltereRows.Count = " + filteredRows.Count);
-            long combinations = 0;
-            foreach (var item0 in filteredRows)
+
+            foreach (var row in newGetOutputRow(filteredRows))
             {
-                var less1filteredrows = filteredRows.Where(x => x != item0).ToList();
-                foreach (var item1 in less1filteredrows)
-                {
-                    var less2filteredrows = less1filteredrows.Skip(1).ToList();
-                    foreach (var item2 in less2filteredrows)
-                    {
-                        var less3filteredrows = less2filteredrows.Skip(1).ToList();
-                        foreach (var item3 in less3filteredrows)
-                        {
-                            var less4filteredrows = less3filteredrows.Skip(1).ToList();
-                            foreach (var item4 in less4filteredrows)
-                            {
-                                var less5filteredrows = less4filteredrows.Skip(1).ToList();
-                                foreach (var item5 in less5filteredrows)
-                                {
-                                    ++combinations;
-                                    Trace.WriteLine(combinations + ": " + item0.Name + ", " + item1.Name + ", " + item2.Name + ", " + item3.Name + ", " + item4.Name + ", " + item5.Name);
-                                }
-                            }
-                        }
-                    }
-                }
+                //Trace.WriteLine(String.Join(", ", row.Names)+ ", "+ String.Join(", ", new[] { row.Level + row.Perception, row.Charisma, row.Luck, row.Variance }));
             }
 
             
-            Trace.WriteLine("Combinations Count = " + combinations);
             //var rRows = Enumerable.Range(0, rowCount);
             //dataGridViewOutput.Rows.Clear();
             //int.TryParse(textMax.Text, out int max);
