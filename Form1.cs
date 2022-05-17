@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace WaifuPartyCalcuator
 {
@@ -148,7 +149,7 @@ namespace WaifuPartyCalcuator
         //        .SelectMany(t => list.Where(o => !t.Contains(o)),
         //            (t1, t2) => t1.Concat(new T[] { t2 }));
         //}
-        
+
         private interface IRawRowData
         {
             public int Perception { get; }
@@ -196,7 +197,7 @@ namespace WaifuPartyCalcuator
         {
             static private int IGetCellValue(int currenti, DataGridViewRow row) { int.TryParse(row.Cells[currenti].Value?.ToString() ?? "0", out int outi); if (outi > 0) return outi; return 0; }
             static private float FGetCellValue(int currenti, DataGridViewRow row) { float.TryParse(row.Cells[currenti].Value?.ToString() ?? "0.0", out float outf); if (outf > 0.0f) return outf; return 0.0f; }
-            public RawInputRowData(DataGridViewRow row)               
+            public RawInputRowData(DataGridViewRow row)
             {
                 Name = row.Cells[ColPos.Name].Value?.ToString() ?? "";
                 Perception = IGetCellValue(ColPos.Perception, row);
@@ -204,7 +205,7 @@ namespace WaifuPartyCalcuator
                 Luck = IGetCellValue(ColPos.Luck, row);
                 Level = IGetCellValue(ColPos.Level, row);
                 Variance = FGetCellValue(ColPos.Variance, row);
-            }           
+            }
 
             public string Name { get; }
             public int Perception { get; }
@@ -359,29 +360,63 @@ namespace WaifuPartyCalcuator
             string button_string_value = buttonGenerate.Text;
             buttonGenerate.Text = wait;
             buttonGenerate.Enabled = false;
-            var rRows = Enumerable.Range(0, rowCount);
-            dataGridViewOutput.Rows.Clear();
-            int.TryParse(textMax.Text, out int max);
-            if (max <= 1)
-                max = 100;
-            foreach (var tmpRow in Dedupe(GetSorted(GetRowData(filteredRows))).Take(max))
+            foreach (var row in filteredRows)
             {
-                { // add row
-                    int currentRowIndex = dataGridViewOutput.Rows.Add();
-                    foreach (var data in tmpRow.Names.Select((x, coli) => new { Name = x, Index = coli }))
-                    {
-                        dataGridViewOutput.Rows[currentRowIndex].Cells[data.Index].Value = data.Name;
-                    }
-                    void AppendNumber(int currenti, int value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString();
-                    void AppendNumberf(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString("F3", CultureInfo.InvariantCulture);
-                    AppendNumber(ColPos.Perception, tmpRow.Perception);
-                    AppendNumber(ColPos.Charisma, tmpRow.Charisma);
-                    AppendNumber(ColPos.Luck, tmpRow.Luck);
-                    AppendNumberf(ColPos.Variance, tmpRow.Variance);
-                    AppendNumber(ColPos.Level, tmpRow.Level);
-                }
-                Application.DoEvents();
+                Trace.WriteLine(row.Name + ", " + row.Level + ", " + row.Perception + ", " + row.Charisma + ", " + row.Luck);
             }
+            Trace.WriteLine("FiltereRows.Count = " + filteredRows.Count);
+            long combinations = 0;
+            foreach (var item0 in filteredRows)
+            {
+                var less1filteredrows = filteredRows.Where(x => x != item0).ToList();
+                foreach (var item1 in less1filteredrows)
+                {
+                    var less2filteredrows = less1filteredrows.Skip(1).ToList();
+                    foreach (var item2 in less2filteredrows)
+                    {
+                        var less3filteredrows = less2filteredrows.Skip(1).ToList();
+                        foreach (var item3 in less3filteredrows)
+                        {
+                            var less4filteredrows = less3filteredrows.Skip(1).ToList();
+                            foreach (var item4 in less4filteredrows)
+                            {
+                                var less5filteredrows = less4filteredrows.Skip(1).ToList();
+                                foreach (var item5 in less5filteredrows)
+                                {
+                                    ++combinations;
+                                    Trace.WriteLine(combinations + ": " + item0.Name + ", " + item1.Name + ", " + item2.Name + ", " + item3.Name + ", " + item4.Name + ", " + item5.Name);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            
+            Trace.WriteLine("Combinations Count = " + combinations);
+            //var rRows = Enumerable.Range(0, rowCount);
+            //dataGridViewOutput.Rows.Clear();
+            //int.TryParse(textMax.Text, out int max);
+            //if (max <= 1)
+            //    max = 100;
+            //foreach (var tmpRow in Dedupe(GetSorted(GetRowData(filteredRows))).Take(max))
+            //{
+            //    { // add row
+            //        int currentRowIndex = dataGridViewOutput.Rows.Add();
+            //        foreach (var data in tmpRow.Names.Select((x, coli) => new { Name = x, Index = coli }))
+            //        {
+            //            dataGridViewOutput.Rows[currentRowIndex].Cells[data.Index].Value = data.Name;
+            //        }
+            //        void AppendNumber(int currenti, int value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString();
+            //        void AppendNumberf(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString("F3", CultureInfo.InvariantCulture);
+            //        AppendNumber(ColPos.Perception, tmpRow.Perception);
+            //        AppendNumber(ColPos.Charisma, tmpRow.Charisma);
+            //        AppendNumber(ColPos.Luck, tmpRow.Luck);
+            //        AppendNumberf(ColPos.Variance, tmpRow.Variance);
+            //        AppendNumber(ColPos.Level, tmpRow.Level);
+            //    }
+            //    Application.DoEvents();
+            //}
             dataGridViewOutput.Refresh();
             buttonGenerate.Text = button_string_value;
             buttonGenerate.Enabled = true;
