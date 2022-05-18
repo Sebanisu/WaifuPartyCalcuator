@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WaifuPartyCalcuator
 {
@@ -30,7 +31,7 @@ namespace WaifuPartyCalcuator
             InitializeComponent();
         }
 
-        static private float GenerateVariance(IEnumerable<int> rRow)
+        static private float GenerateVariance(int[] rRow)
         {
             float fCount = 3.0f;//rRow.Count();
             float fMean = rRow.Sum() / fCount;
@@ -40,7 +41,7 @@ namespace WaifuPartyCalcuator
         {
             if (e.RowIndex < 0) return;
             var rRow = Enumerable.Range(1, 3).Select(i => { int.TryParse(dataGridViewInput.Rows[e.RowIndex].Cells[i].Value?.ToString() ?? "0", out int v); if (v > 0) return v; return 0; });
-            dataGridViewInput.Rows[e.RowIndex].Cells[4].Value = GenerateVariance(rRow).ToString("F3", CultureInfo.InvariantCulture);
+            dataGridViewInput.Rows[e.RowIndex].Cells[4].Value = GenerateVariance(rRow.ToArray()).ToString("F3", CultureInfo.InvariantCulture);
         }
 
 
@@ -119,6 +120,22 @@ namespace WaifuPartyCalcuator
                 ++i;
             }
         }
+        private IEnumerable<IEnumerable<T>> GetPermutations2<T>(ParallelQuery<T> items, int count)
+        {
+            int i = 0;
+            foreach (var item in items)
+            {
+                if (count == 1)
+                    yield return new T[] { item };
+                else
+                {
+                    foreach (var result in GetPermutations2(items.Skip(i + 1), count - 1))
+                        yield return new T[] { item }.Concat(result);
+                }
+
+                ++i;
+            }
+        }
 
         private IEnumerable<IEnumerable<T>> GetPermutationsFirst<T>(IEnumerable<T> items, int count)
         {
@@ -185,7 +202,7 @@ namespace WaifuPartyCalcuator
 
                 Variance = GenerateVariance(new int[] { Perception, Charisma, Luck });
             }
-            private string[] m_names;
+            readonly private string[] m_names;
             public IReadOnlyList<string> Names { get => m_names; }
             public int Perception { get; }
             public int Charisma { get; }
@@ -348,35 +365,205 @@ namespace WaifuPartyCalcuator
                 return tmpRows.GroupBy(x => new { x.Perception, x.Charisma, x.Luck, x.Level }).Select(x => x.FirstOrDefault());
             return tmpRows.Select(x => x);
         }
-        private IEnumerable<RawInputRowData[]> newGetOutputRow(List<RawInputRowData> filteredRows)
+        public double factorial_WhileLoop(int number)
+        {
+            double result = 1;
+            while (number != 1)
+            {
+                result = result * number;
+                --number;
+            }
+            return result;
+        }
+        private long MaxCount(int n)
+        {
+
+            const int r = 5;
+            double max_count = factorial_WhileLoop(n) / (factorial_WhileLoop(r) * factorial_WhileLoop(n - r));
+            return (long)max_count;
+        }
+        class combination
+        {
+            public RawInputRowData[] Raw { get; }
+            public float Level { get; }
+            public float Perception { get; }
+            public float Charisma { get; }
+            public float Luck { get; }
+            public combination(RawInputRowData[] in_raw)
+            {
+                Raw = in_raw;
+                Level = (float)(in_raw.Average(x => x.Level) / 2.0d);
+                Perception = (float)(in_raw.Average(x => x.Perception) / 2.0d);
+                Charisma = (float)(in_raw.Average(x => x.Charisma) / 2.0d);
+                Luck = (float)(in_raw.Average(x => x.Luck) / 2.0d);
+            }
+        }
+        class combinationComparer : IEqualityComparer<combination>
+        {
+            public bool Equals([AllowNull] combination x, [AllowNull] combination y)
+            {
+                if (x == y) return true;
+                if (x == null || y == null) return false;
+                if (x.Level != y.Level) return false;
+                if (x.Perception != y.Perception) return false;
+                if (x.Charisma != y.Charisma) return false;
+                if (x.Luck != y.Luck) return false;
+                return false;
+            }
+
+            public int GetHashCode([DisallowNull] combination obj)
+            {
+                return Tuple.Create(obj.Level, obj.Perception, obj.Charisma, obj.Luck).GetHashCode();
+            }
+        }
+        class first_column
+        {
+
+            public RawInputRowData Raw { get; }
+            public float Level { get; }
+            public float Perception { get; }
+            public float Charisma { get; }
+            public float Luck { get; }
+
+            public first_column(RawInputRowData in_raw)
+            {
+                Raw = in_raw;
+                Level = in_raw.Level / 2.0f;
+                Perception = in_raw.Perception / 2.0f;
+                Charisma = in_raw.Charisma / 2.0f;
+                Luck = in_raw.Luck / 2.0f;
+            }
+        }
+
+        class first_columnComparer : IEqualityComparer<first_column>
+        {
+            public bool Equals([AllowNull] first_column x, [AllowNull] first_column y)
+            {
+                if (x == y) return true;
+                if (x == null || y == null) return false;
+                if (x.Level != y.Level) return false;
+                if (x.Perception != y.Perception) return false;
+                if (x.Charisma != y.Charisma) return false;
+                if (x.Luck != y.Luck) return false;
+                return false;
+            }
+
+            public int GetHashCode([DisallowNull] first_column obj)
+            {
+                return Tuple.Create(obj.Level, obj.Perception, obj.Charisma, obj.Luck).GetHashCode();
+            }
+        }
+        private IEnumerable<first_column> getfirst_columns(List<RawInputRowData> filteredRows)
+        {
+            foreach (var item in filteredRows.AsParallel())
+            {
+                yield return new first_column(item);
+            }
+        }
+        class combined_output
+        {
+            public RawInputRowData[] Raw { get; }
+            public int Level { get; }
+            public int Perception { get; }
+            public int Charisma { get; }
+            public int Luck { get; }
+            public float Variance { get; }
+            public bool Valid { get; } = false;
+            public combined_output(first_column in_first_column, combination in_combination)
+            {
+                if (in_combination.Raw.Contains(in_first_column.Raw))
+                {
+                    return;
+                }
+                Raw = in_combination.Raw.Prepend(in_first_column.Raw).ToArray();
+                Level = (int)Math.Ceiling(in_first_column.Level + in_combination.Level);
+                Perception = (int)Math.Ceiling(in_first_column.Perception + in_combination.Perception);
+                Charisma = (int)Math.Ceiling(in_first_column.Charisma + in_combination.Charisma);
+                Luck = (int)Math.Ceiling(in_first_column.Luck + in_combination.Luck);
+                Variance = GenerateVariance(new int[] { Perception, Charisma, Luck });
+                Valid = true;
+            }
+        }
+        private IEnumerable<combination> getcombinations(List<RawInputRowData> filteredRows)
         {
             long combinations = 0;
+            long max_count = MaxCount(filteredRows.Count());
             var q = filteredRows.AsParallel();
-                foreach (var item1 in q)
+            foreach (var items in GetPermutations2(q, 5))
+            {
+                if (++combinations % 1000000 == 0)
                 {
-                    var less2filteredrows = q.Skip(1);
-                    foreach (var item2 in less2filteredrows)
+                    Trace.WriteLine(combinations + " / " + max_count);
+                }
+                if (combinations % 10000 == 0)
+                {
+                    label4.Text = "Combinations: " + (((double)(combinations) / (double)max_count) * 100).ToString("00.000") + "%";
+                    Application.DoEvents();
+                }
+                yield return new combination(items.ToArray());
+
+            }
+            Trace.WriteLine("Combinations Count = " + combinations);
+            label4.Text = "";
+        }
+        private void saveoutputtofile(IEnumerable<combined_output> combined_Outputs)
+        {
+            try
+            {
+                using (FileStream fs = File.Open("output.csv", FileMode.Create, FileAccess.Write, FileShare.Read))
+                {
+                    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
                     {
-                        var less3filteredrows = less2filteredrows.Skip(1);
-                        foreach (var item3 in less3filteredrows)
                         {
-                            var less4filteredrows = less3filteredrows.Skip(1);
-                            foreach (var item4 in less4filteredrows)
-                            {
-                                var less5filteredrows = less4filteredrows.Skip(1);
-                                foreach (var item5 in less5filteredrows)
-                                {
-                                    yield return new[] { item1, item2, item3, item4, item5 };
-                                    if (++combinations % 1000000 == 0)
-                                        Trace.WriteLine(combinations);
-                                    //Trace.WriteLine(combinations + ": " + item0.Name + ", " + item1.Name + ", " + item2.Name + ", " + item3.Name + ", " + item4.Name + ", " + item5.Name);
-                                }
-                            }
+                            int columnCount = dataGridViewOutput.Columns.Count;
+                            string header = Enumerable.Range(0, columnCount).Select(i => dataGridViewOutput.Columns[i].HeaderText.ToString() + ",").Aggregate((c, s) => c + s);
+                            Debug.WriteLine(header);
+                            sw.WriteLine(header);
+                            sw.Flush();
+                        }
+                        foreach (var output in combined_Outputs)
+                        {
+                            string outputcsv =
+                            output.Raw.Select(i => "\"" + i.Name + "\",").Aggregate((c, s) => c + s);
+                            void AppendNumber(int value) => outputcsv += value.ToString() + ",";
+                            void AppendNumberf(float value) => outputcsv += value.ToString("F3", CultureInfo.InvariantCulture) + ",";
+                            AppendNumber(output.Perception);
+                            AppendNumber(output.Charisma);
+                            AppendNumber(output.Luck);
+                            AppendNumberf(output.Variance);
+                            AppendNumber(output.Level);
+                            Debug.WriteLine(outputcsv);
+                            sw.WriteLine(outputcsv);
+                            sw.Flush();
                         }
                     }
                 }
-            
-            Trace.WriteLine("Combinations Count = " + combinations);
+            }
+            catch
+            {
+            }
+        }
+        private IEnumerable<combined_output> GetCombined_Outputs(first_column[] first_Columns, combination[] combinations)
+        {
+
+            long approx_max_rows = first_Columns.Length * combinations.Length;
+            long current_row = 0;
+            foreach (first_column first in first_Columns.AsParallel())
+                foreach (combination combination in combinations.AsParallel())
+                {
+                    var tmpRow = new combined_output(first, combination);
+                    if (!tmpRow.Valid) continue;
+                    yield return tmpRow;
+
+                    if (current_row % 1000 == 0)
+                    {
+                        label4.Text = "Rows Output: " + (((double)(current_row) / (double)approx_max_rows) * 100).ToString("00.000") + "%";
+                        Trace.WriteLine(current_row);
+                        Application.DoEvents();
+                    }
+                    ++current_row;
+                }
+            label4.Text = "";
         }
         private void buttonGenerate_Click(object sender, EventArgs e)
         {
@@ -395,12 +582,44 @@ namespace WaifuPartyCalcuator
             }
             Trace.WriteLine("FiltereRows.Count = " + filteredRows.Count);
 
-            foreach (var row in newGetOutputRow(filteredRows))
-            {
-                //Trace.WriteLine(String.Join(", ", row.Names)+ ", "+ String.Join(", ", new[] { row.Level + row.Perception, row.Charisma, row.Luck, row.Variance }));
-            }
+            first_column[] first_Columns = getfirst_columns(filteredRows).Distinct(new first_columnComparer()).ToArray();
+            combination[] combinations = getcombinations(filteredRows).Distinct(new combinationComparer()).ToArray();
 
-            
+            saveoutputtofile(GetCombined_Outputs(first_Columns, combinations));
+
+            //long approx_max_rows = filteredRows.Count * combinations.GetLength(0);
+            //long current_row = 0;
+            //const int partySize = 6;
+            //foreach (first_column first in first_Columns)
+            //    foreach (combination combination in combinations)
+            //    {
+            //        var tmpRow = new combined_output(first, combination);
+            //        if (!tmpRow.Valid) continue;
+            //        { // add row
+            //            int currentRowIndex = dataGridViewOutput.Rows.Add();
+            //            foreach (var data in tmpRow.Raw.Select((x, coli) => new { Name = x.Name, Index = coli }))
+            //            {
+            //                dataGridViewOutput.Rows[currentRowIndex].Cells[data.Index].Value = data.Name;
+            //            }
+            //            void AppendNumber(int currenti, int value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString();
+            //            void AppendNumberf(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString("F3", CultureInfo.InvariantCulture);
+            //            AppendNumber(ColPos.Perception, tmpRow.Perception);
+            //            AppendNumber(ColPos.Charisma, tmpRow.Charisma);
+            //            AppendNumber(ColPos.Luck, tmpRow.Luck);
+            //            AppendNumberf(ColPos.Variance, tmpRow.Variance);
+            //            AppendNumber(ColPos.Level, tmpRow.Level);
+            //        }
+            //        if (current_row % 1000 == 0)
+            //        {
+            //            label4.Text = "Rows Output: " + (((double)(current_row) / (double)approx_max_rows) * 100).ToString("00.000") + "%";
+            //            Trace.WriteLine(current_row);
+            //            Application.DoEvents();
+            //        }
+            //        ++current_row;
+            //    }
+            //label4.Text = "";
+
+
             //var rRows = Enumerable.Range(0, rowCount);
             //dataGridViewOutput.Rows.Clear();
             //int.TryParse(textMax.Text, out int max);
@@ -536,6 +755,5 @@ namespace WaifuPartyCalcuator
                 //listView1.AutoArrange = true;         
             }
         }
-
     }
 }
