@@ -359,10 +359,20 @@ namespace WaifuPartyCalcuator
         //    //return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
         //}
 
-        private IEnumerable<RawOutputRowData> Dedupe(IEnumerable<RawOutputRowData> tmpRows)
+        private IEnumerable<Tuple<RawInputRowData, RawInputRowData[]>> Dedupe(IEnumerable<Tuple<RawInputRowData, RawInputRowData[]>> tmpRows)
         {
             if (checkDistinct.Checked)
-                return tmpRows.GroupBy(x => new { x.Perception, x.Charisma, x.Luck, x.Level }).Select(x => x.FirstOrDefault());
+                return tmpRows.GroupBy(f => {
+                    (RawInputRowData first, RawInputRowData[] rest) = f;
+                    var final_party = rest.Skip(1).Append(first).ToArray();
+                    return new
+                    {
+                        p = (int)Math.Ceiling(CalcStat(x => x.Perception, rest[0], final_party)),
+                        c = (int)Math.Ceiling(CalcStat(x => x.Charisma, rest[0], final_party)),
+                        l = (int)Math.Ceiling(CalcStat(x => x.Luck, rest[0], final_party)),
+                        lvl = (int)Math.Ceiling(CalcStat(x => x.Level, rest[0], final_party))
+                    };
+                }).Select(x => x.FirstOrDefault());
             return tmpRows.Select(x => x);
         }
         public double factorial_WhileLoop(int number)
@@ -718,7 +728,7 @@ namespace WaifuPartyCalcuator
         }
         const int max_per_level = 3;
 
-        private void AddOutputRow(RawInputRowData first, RawInputRowData[]rest)
+        private void AddOutputRow(RawInputRowData first, RawInputRowData[] rest)
 
         {
 
@@ -726,13 +736,13 @@ namespace WaifuPartyCalcuator
             { // add row
                 const int partySize = 6;
                 int currentRowIndex = dataGridViewOutput.Rows.Add();
-                foreach (var data in rest.Prepend(first).Select(x=>x.Name).Select((x, coli) => new { Name = x, Index = coli }))
+                foreach (var data in rest.Prepend(first).Select(x => x.Name).Select((x, coli) => new { Name = x, Index = coli }))
                 {
                     dataGridViewOutput.Rows[currentRowIndex].Cells[data.Index].Value = data.Name;
                 }
                 void AppendNumberi(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = ((int)Math.Ceiling(value)).ToString();
                 void AppendNumberf(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString("F3", CultureInfo.InvariantCulture);
-                AppendNumberi(ColPos.Perception, CalcStat(x=>x.Perception,first,rest));
+                AppendNumberi(ColPos.Perception, CalcStat(x => x.Perception, first, rest));
                 AppendNumberi(ColPos.Charisma, CalcStat(x => x.Charisma, first, rest));
                 AppendNumberi(ColPos.Luck, CalcStat(x => x.Luck, first, rest));
                 AppendNumberf(ColPos.Variance, CalcVariance(first, rest));
@@ -755,7 +765,7 @@ namespace WaifuPartyCalcuator
             void traceout(RawInputRowData member, RawInputRowData[]? tmpparty = default)
             {
                 var final_party = tmpparty?.Skip(1).Append(member).ToArray();
-                Trace.WriteLine(string.Concat(Enumerable.Repeat("\t",tmpparty?.Length??0)) + member.Name + ", " + member.Level + ", " + member.Perception + ", " + member.Charisma + ", " + member.Luck + ", " +
+                Trace.WriteLine(string.Concat(Enumerable.Repeat("\t", tmpparty?.Length ?? 0)) + member.Name + ", " + member.Level + ", " + member.Perception + ", " + member.Charisma + ", " + member.Luck + ", " +
                 CalcRemaining(TargetLevel, (x => x.Level), member, tmpparty) + ", " +
                 CalcRemaining(TargetGoal, (x => x.Perception), member, tmpparty) + ", " +
                 CalcRemaining(TargetGoal, (x => x.Charisma), member, tmpparty) + ", " +
@@ -772,51 +782,63 @@ namespace WaifuPartyCalcuator
                     CalcVariance(tmpparty[0], final_party));
                 AddOutputRow(tmpparty[0], final_party);
             }
-            dataGridViewOutput.Rows.Clear();
-            foreach (DataGridViewColumn? column in dataGridViewOutput.Columns)
+            IEnumerable<Tuple<RawInputRowData, RawInputRowData[]>> Loop()
             {
-                if(column != null)
-                column.SortMode = DataGridViewColumnSortMode.NotSortable;
-            }
-
-            dataGridViewOutput.AutoSizeColumnsMode =
-                DataGridViewAutoSizeColumnsMode.None;
-            foreach (var party0 in Sort1(filteredRows))
-            {
-                traceout(party0);
-                var tmp_party1 = new RawInputRowData[] { party0 };
-                foreach (var party1 in Sort1(filteredRows.Where(x => !tmp_party1.Contains(x)), tmp_party1).Take(max_per_level))
+                foreach (var party0 in Sort1(filteredRows))
                 {
-                    traceout(party1, tmp_party1);
-                    var tmp_party2 = new RawInputRowData[] { party0, party1 };
-                    foreach (var party2 in Sort1(filteredRows.Where(x => !tmp_party2.Contains(x)), tmp_party2).Take(max_per_level))
+                    traceout(party0);
+                    var tmp_party1 = new RawInputRowData[] { party0 };
+                    foreach (var party1 in Sort1(filteredRows.Where(x => !tmp_party1.Contains(x)), tmp_party1).Take(max_per_level))
                     {
-                        traceout(party2, tmp_party2);
-                        var tmp_party3 = new RawInputRowData[] { party0, party1, party2 };
-                        foreach (var party3 in Sort1(filteredRows.Where(x => !tmp_party3.Contains(x)), tmp_party3).Take(max_per_level))
+                        traceout(party1, tmp_party1);
+                        var tmp_party2 = new RawInputRowData[] { party0, party1 };
+                        foreach (var party2 in Sort1(filteredRows.Where(x => !tmp_party2.Contains(x)), tmp_party2).Take(max_per_level))
                         {
-                            traceout(party3, tmp_party3);
-                            var tmp_party4 = new RawInputRowData[] { party0, party1, party2, party3 };
-                            foreach (var party4 in Sort1(filteredRows.Where(x => !tmp_party4.Contains(x)), tmp_party4).Take(max_per_level))
+                            traceout(party2, tmp_party2);
+                            var tmp_party3 = new RawInputRowData[] { party0, party1, party2 };
+                            foreach (var party3 in Sort1(filteredRows.Where(x => !tmp_party3.Contains(x)), tmp_party3).Take(max_per_level))
                             {
-                                traceout(party4, tmp_party4);
-                                var tmp_party5 = new RawInputRowData[] { party0, party1, party2, party3, party4 };
-                                foreach (var party5 in Sort1(filteredRows.Where(x => !tmp_party5.Contains(x)), tmp_party5).Take(max_per_level))
+                                traceout(party3, tmp_party3);
+                                var tmp_party4 = new RawInputRowData[] { party0, party1, party2, party3 };
+                                foreach (var party4 in Sort1(filteredRows.Where(x => !tmp_party4.Contains(x)), tmp_party4).Take(max_per_level))
                                 {
-                                    traceout(party5, tmp_party5);
-                                    traceoutfinalgroupstats(party5, tmp_party5);                                    
+                                    traceout(party4, tmp_party4);
+                                    var tmp_party5 = new RawInputRowData[] { party0, party1, party2, party3, party4 };
+                                    foreach (var party5 in Sort1(filteredRows.Where(x => !tmp_party5.Contains(x)), tmp_party5).Take(max_per_level))
+                                    {
+                                        traceout(party5, tmp_party5);
+                                        yield return new Tuple<RawInputRowData, RawInputRowData[]>(party5, tmp_party5);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-            dataGridViewOutput.AutoResizeColumns();
+
+
+            dataGridViewOutput.Rows.Clear();
+            foreach (DataGridViewColumn? column in dataGridViewOutput.Columns)
+            {
+                if (column != null)
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+            dataGridViewOutput.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            foreach ((RawInputRowData first, RawInputRowData[] rest) in Dedupe(Loop()))
+            {
+                traceoutfinalgroupstats(first,rest);
+            }
+
             foreach (DataGridViewColumn? column in dataGridViewOutput.Columns)
             {
                 if (column != null)
                     column.SortMode = DataGridViewColumnSortMode.Automatic;
             }
+            dataGridViewOutput.AutoResizeColumns();
+
+
+
+
             //Trace.WriteLine("FiltereRows.Count = " + filteredRows.Count);
 
             //first_column[] first_Columns = getfirst_columns(filteredRows).Distinct(new first_columnComparer()).ToArray();
