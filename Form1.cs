@@ -31,7 +31,7 @@ namespace WaifuPartyCalcuator
             InitializeComponent();
         }
 
-        static private float GenerateVariance(int[] rRow)
+        static private float CalcVariance(int[] rRow)
         {
             float fCount = 3.0f;//rRow.Count();
             float fMean = rRow.Sum() / fCount;
@@ -41,7 +41,7 @@ namespace WaifuPartyCalcuator
         {
             if (e.RowIndex < 0) return;
             var rRow = Enumerable.Range(1, 3).Select(i => { int.TryParse(dataGridViewInput.Rows[e.RowIndex].Cells[i].Value?.ToString() ?? "0", out int v); if (v > 0) return v; return 0; });
-            dataGridViewInput.Rows[e.RowIndex].Cells[4].Value = GenerateVariance(rRow.ToArray()).ToString("F3", CultureInfo.InvariantCulture);
+            dataGridViewInput.Rows[e.RowIndex].Cells[4].Value = CalcVariance(rRow.ToArray()).ToString("F3", CultureInfo.InvariantCulture);
         }
 
 
@@ -200,7 +200,7 @@ namespace WaifuPartyCalcuator
                 Luck = GetProcessedValue(GetLuck);
                 Level = GetProcessedValue(GetLevel);
 
-                Variance = GenerateVariance(new int[] { Perception, Charisma, Luck });
+                Variance = CalcVariance(new int[] { Perception, Charisma, Luck });
             }
             readonly private string[] m_names;
             public IReadOnlyList<string> Names { get => m_names; }
@@ -271,93 +271,93 @@ namespace WaifuPartyCalcuator
             }
         }
 
-        private IOrderedEnumerable<RawOutputRowData> Sort(IEnumerable<RawOutputRowData> tmpRows)
-        {
-            IEnumerable<ListViewItem> sortItems = GetSortItems();
-            ListViewItem? current = sortItems.FirstOrDefault();
-            if (current != null)
-            {
-                if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return Sort(tmpRows.OrderByDescending(GetPerception), sortItems.Skip(1));
-                }
-                if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return Sort(tmpRows.OrderByDescending(GetCharisma), sortItems.Skip(1));
-                }
-                if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return Sort(tmpRows.OrderByDescending(GetLuck), sortItems.Skip(1));
-                }
-                if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return Sort(tmpRows.OrderByDescending(GetLevel), sortItems.Skip(1));
-                }
-            }
-            return Sort(tmpRows.OrderBy(GetVariance), sortItems.Skip(1));
-        }
-        private static IOrderedEnumerable<RawOutputRowData> Sort(IOrderedEnumerable<RawOutputRowData> tmpRows, IEnumerable<ListViewItem> sortItems)
-        {
-            foreach (ListViewItem? current in sortItems)
-            {
-                if (current != null)
-                {
-                    if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        tmpRows = tmpRows.ThenByDescending(GetPerception);
-                    }
-                    if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        tmpRows = tmpRows.ThenByDescending(GetCharisma);
-                    }
-                    if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        tmpRows = tmpRows.ThenByDescending(GetLuck);
-                    }
-                    if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        tmpRows = tmpRows.ThenByDescending(GetLevel);
-                    }
-                    if (current.Text.Equals("Variance", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        tmpRows = tmpRows.ThenBy(GetVariance);
-                    }
-                }
-            }
-            return tmpRows;
-        }
-        private IOrderedEnumerable<RawOutputRowData> GetSorted(IEnumerable<RawOutputRowData> tmpRows)
-        {
-            return Sort(tmpRows);
-            //if (!checkVariance.Checked)
-            //{
-            //    if (radioPLC.Checked)
-            //        return tmpRows.OrderByDescending(x => x.P).ThenByDescending(x => x.L).ThenByDescending(x => x.C);
-            //    if (radioCPL.Checked)
-            //        return tmpRows.OrderByDescending(x => x.C).ThenByDescending(x => x.P).ThenByDescending(x => x.L);
-            //    if (radioCLP.Checked)
-            //        return tmpRows.OrderByDescending(x => x.C).ThenByDescending(x => x.L).ThenByDescending(x => x.P);
-            //    if (radioLPC.Checked)
-            //        return tmpRows.OrderByDescending(x => x.L).ThenByDescending(x => x.P).ThenByDescending(x => x.C);
-            //    if (radioLCP.Checked)
-            //        return tmpRows.OrderByDescending(x => x.L).ThenByDescending(x => x.C).ThenByDescending(x => x.P);
-            //    //if (radioPCL.Checked) //else
-            //    return tmpRows.OrderByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
-            //}
+        //private IOrderedEnumerable<RawOutputRowData> Sort(IEnumerable<RawOutputRowData> tmpRows)
+        //{
+        //    IEnumerable<ListViewItem> sortItems = GetSortItems();
+        //    ListViewItem? current = sortItems.FirstOrDefault();
+        //    if (current != null)
+        //    {
+        //        if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
+        //        {
+        //            return Sort(tmpRows.OrderByDescending(GetPerception), sortItems.Skip(1));
+        //        }
+        //        if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
+        //        {
+        //            return Sort(tmpRows.OrderByDescending(GetCharisma), sortItems.Skip(1));
+        //        }
+        //        if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
+        //        {
+        //            return Sort(tmpRows.OrderByDescending(GetLuck), sortItems.Skip(1));
+        //        }
+        //        if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
+        //        {
+        //            return Sort(tmpRows.OrderByDescending(GetLevel), sortItems.Skip(1));
+        //        }
+        //    }
+        //    return Sort(tmpRows.OrderBy(GetVariance), sortItems.Skip(1));
+        //}
+        //private static IOrderedEnumerable<RawOutputRowData> Sort(IOrderedEnumerable<RawOutputRowData> tmpRows, IEnumerable<ListViewItem> sortItems)
+        //{
+        //    foreach (ListViewItem? current in sortItems)
+        //    {
+        //        if (current != null)
+        //        {
+        //            if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
+        //            {
+        //                tmpRows = tmpRows.ThenByDescending(GetPerception);
+        //            }
+        //            if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
+        //            {
+        //                tmpRows = tmpRows.ThenByDescending(GetCharisma);
+        //            }
+        //            if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
+        //            {
+        //                tmpRows = tmpRows.ThenByDescending(GetLuck);
+        //            }
+        //            if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
+        //            {
+        //                tmpRows = tmpRows.ThenByDescending(GetLevel);
+        //            }
+        //            if (current.Text.Equals("Variance", StringComparison.InvariantCultureIgnoreCase))
+        //            {
+        //                tmpRows = tmpRows.ThenBy(GetVariance);
+        //            }
+        //        }
+        //    }
+        //    return tmpRows;
+        //}
+        //private IOrderedEnumerable<RawOutputRowData> GetSorted(IEnumerable<RawOutputRowData> tmpRows)
+        //{
+        //    return Sort(tmpRows);
+        //    //if (!checkVariance.Checked)
+        //    //{
+        //    //    if (radioPLC.Checked)
+        //    //        return tmpRows.OrderByDescending(x => x.P).ThenByDescending(x => x.L).ThenByDescending(x => x.C);
+        //    //    if (radioCPL.Checked)
+        //    //        return tmpRows.OrderByDescending(x => x.C).ThenByDescending(x => x.P).ThenByDescending(x => x.L);
+        //    //    if (radioCLP.Checked)
+        //    //        return tmpRows.OrderByDescending(x => x.C).ThenByDescending(x => x.L).ThenByDescending(x => x.P);
+        //    //    if (radioLPC.Checked)
+        //    //        return tmpRows.OrderByDescending(x => x.L).ThenByDescending(x => x.P).ThenByDescending(x => x.C);
+        //    //    if (radioLCP.Checked)
+        //    //        return tmpRows.OrderByDescending(x => x.L).ThenByDescending(x => x.C).ThenByDescending(x => x.P);
+        //    //    //if (radioPCL.Checked) //else
+        //    //    return tmpRows.OrderByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
+        //    //}
 
-            //if (radioPLC.Checked)
-            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.L).ThenByDescending(x => x.C);
-            //if (radioCPL.Checked)
-            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.C).ThenByDescending(x => x.P).ThenByDescending(x => x.L);
-            //if (radioCLP.Checked)
-            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.C).ThenByDescending(x => x.L).ThenByDescending(x => x.P);
-            //if (radioLPC.Checked)
-            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.L).ThenByDescending(x => x.P).ThenByDescending(x => x.C);
-            //if (radioLCP.Checked)
-            //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.L).ThenByDescending(x => x.C).ThenByDescending(x => x.P);
-            ////if (radioPCL.Checked) //else
-            //return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
-        }
+        //    //if (radioPLC.Checked)
+        //    //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.L).ThenByDescending(x => x.C);
+        //    //if (radioCPL.Checked)
+        //    //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.C).ThenByDescending(x => x.P).ThenByDescending(x => x.L);
+        //    //if (radioCLP.Checked)
+        //    //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.C).ThenByDescending(x => x.L).ThenByDescending(x => x.P);
+        //    //if (radioLPC.Checked)
+        //    //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.L).ThenByDescending(x => x.P).ThenByDescending(x => x.C);
+        //    //if (radioLCP.Checked)
+        //    //    return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.L).ThenByDescending(x => x.C).ThenByDescending(x => x.P);
+        //    ////if (radioPCL.Checked) //else
+        //    //return tmpRows.OrderBy(x => x.Variance).ThenByDescending(x => x.P).ThenByDescending(x => x.C).ThenByDescending(x => x.L);
+        //}
 
         private IEnumerable<RawOutputRowData> Dedupe(IEnumerable<RawOutputRowData> tmpRows)
         {
@@ -480,7 +480,7 @@ namespace WaifuPartyCalcuator
                 Perception = (int)Math.Ceiling(in_first_column.Perception + in_combination.Perception);
                 Charisma = (int)Math.Ceiling(in_first_column.Charisma + in_combination.Charisma);
                 Luck = (int)Math.Ceiling(in_first_column.Luck + in_combination.Luck);
-                Variance = GenerateVariance(new int[] { Perception, Charisma, Luck });
+                Variance = CalcVariance(new int[] { Perception, Charisma, Luck });
                 Valid = true;
             }
         }
@@ -565,27 +565,264 @@ namespace WaifuPartyCalcuator
                 }
             label4.Text = "";
         }
+        private IOrderedEnumerable<RawInputRowData> Sort1(IEnumerable<RawInputRowData> tmpRows, RawInputRowData[]? current_party = default, IEnumerable<ListViewItem>? sortItems = default)
+        {
+            //if (current_party != null && current_party.Length != 0)
+            //{
+            //    return tmpRows.OrderBy(x => CalcVariance(current_party[0], current_party.Skip(1).Append(x).ToArray()));
+            //}
+            //else
+            //{
+            //    return tmpRows.OrderBy(x => CalcVariance(x));
+            //}
+            if (sortItems == null)
+                sortItems = GetSortItems();
+            ListViewItem? current = sortItems.FirstOrDefault();
+            if (current != null)
+            {
+                if (current_party != null && current_party.Length != 0)
+                {
+                    if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcRemaining(TargetGoal, y => y.Perception, current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcRemaining(TargetGoal, y => y.Charisma, current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcRemaining(TargetGoal, y => y.Luck, current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcRemaining(TargetLevel, y => y.Level, current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Variance", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcVariance(current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                }
+                else
+                {
+                    if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcRemaining(TargetGoal, y => y.Perception, x)), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcRemaining(TargetGoal, y => y.Charisma, x)), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcRemaining(TargetGoal, y => y.Luck, x)), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcRemaining(TargetLevel, y => y.Level, x)), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Variance", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.OrderBy(x => CalcVariance(x)), current_party, sortItems.Skip(1));
+                    }
+                }
+            }
+
+            return tmpRows.OrderBy(x => 1);
+        }
+        private IOrderedEnumerable<RawInputRowData> Sort2(IOrderedEnumerable<RawInputRowData> tmpRows, RawInputRowData[]? current_party = default, IEnumerable<ListViewItem>? sortItems = default)
+        {
+
+            if (sortItems == null)
+                sortItems = GetSortItems();
+            ListViewItem? current = sortItems.FirstOrDefault();
+            if (current != null)
+            {
+                if (current_party != null && current_party.Length != 0)
+                {
+                    if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcRemaining(TargetGoal, y => y.Perception, current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcRemaining(TargetGoal, y => y.Charisma, current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcRemaining(TargetGoal, y => y.Luck, current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcRemaining(TargetLevel, y => y.Level, current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Variance", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcVariance(current_party[0], current_party.Skip(1).Append(x).ToArray())), current_party, sortItems.Skip(1));
+                    }
+                }
+                else
+                {
+                    if (current.Text.Equals("Perception", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcRemaining(TargetGoal, y => y.Perception, x)), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Charisma", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcRemaining(TargetGoal, y => y.Charisma, x)), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Luck", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcRemaining(TargetGoal, y => y.Luck, x)), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Level", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcRemaining(TargetLevel, y => y.Level, x)), current_party, sortItems.Skip(1));
+                    }
+                    if (current.Text.Equals("Variance", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return Sort2(tmpRows.ThenBy(x => CalcVariance(x)), current_party, sortItems.Skip(1));
+                    }
+                }
+            }
+            return tmpRows;
+        }
+        private int TargetGoal
+        {
+            get
+            {
+                if (radio777.Checked)
+                { return 7; }
+                if (radio888.Checked)
+                { return 8; }
+                if (radio999.Checked)
+                {
+                    return 9;
+                }
+                return 10;
+            }
+        }
+        private const int TargetLevel = 100;
+
+        private float CalcVariance(RawInputRowData first, RawInputRowData[]? rest = default)
+        {
+            return CalcVariance(new int[] { (int)Math.Ceiling(CalcStat(x => x.Perception, first, rest)), (int)Math.Ceiling(CalcStat(x => x.Charisma, first, rest)), (int)Math.Ceiling(CalcStat(x => x.Luck, first, rest)) });
+        }
+        private float CalcStat(Func<RawInputRowData, int> func, RawInputRowData first, RawInputRowData[]? rest = default)
+        {
+            return (5 * func(first) + (rest?.Sum(x => func(x)) ?? 0)) / 10.0f;
+        }
+        private float CalcRemaining(int goal, Func<RawInputRowData, int> func, RawInputRowData first, RawInputRowData[]? rest = default)
+        {
+            return Math.Abs(10.0f * goal - (5 * func(first) + (rest?.Sum(x => func(x)) ?? 0)));
+        }
+        const int max_per_level = 3;
+
+        private void AddOutputRow(RawInputRowData first, RawInputRowData[]rest)
+
+        {
+
+            if (dataGridViewOutput.Columns.Count == 0) return;
+            { // add row
+                const int partySize = 6;
+                int currentRowIndex = dataGridViewOutput.Rows.Add();
+                foreach (var data in rest.Prepend(first).Select(x=>x.Name).Select((x, coli) => new { Name = x, Index = coli }))
+                {
+                    dataGridViewOutput.Rows[currentRowIndex].Cells[data.Index].Value = data.Name;
+                }
+                void AppendNumberi(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = ((int)Math.Ceiling(value)).ToString();
+                void AppendNumberf(int currenti, float value) => dataGridViewOutput.Rows[currentRowIndex].Cells[partySize + currenti - 1].Value = value.ToString("F3", CultureInfo.InvariantCulture);
+                AppendNumberi(ColPos.Perception, CalcStat(x=>x.Perception,first,rest));
+                AppendNumberi(ColPos.Charisma, CalcStat(x => x.Charisma, first, rest));
+                AppendNumberi(ColPos.Luck, CalcStat(x => x.Luck, first, rest));
+                AppendNumberf(ColPos.Variance, CalcVariance(first, rest));
+                AppendNumberi(ColPos.Level, CalcStat(x => x.Level, first, rest));
+
+                if (currentRowIndex % 50 == 0)
+                    Application.DoEvents();
+            }
+        }
         private void buttonGenerate_Click(object sender, EventArgs e)
         {
-            //const int partySize = 6;
             int columnCount = dataGridViewInput.Columns.Count;
-            var filteredRows = FilterInputRows().ToList();
-            int rowCount = filteredRows.Count;
+            var filteredRows = FilterInputRows().ToArray();
+            int rowCount = filteredRows.Length;
             if (columnCount <= 0 || rowCount <= 0) return;
             const string wait = "Please Wait...";
             string button_string_value = buttonGenerate.Text;
             buttonGenerate.Text = wait;
             buttonGenerate.Enabled = false;
-            foreach (var row in filteredRows)
+            void traceout(RawInputRowData member, RawInputRowData[]? tmpparty = default)
             {
-                Trace.WriteLine(row.Name + ", " + row.Level + ", " + row.Perception + ", " + row.Charisma + ", " + row.Luck);
+                var final_party = tmpparty?.Skip(1).Append(member).ToArray();
+                Trace.WriteLine(string.Concat(Enumerable.Repeat("\t",tmpparty?.Length??0)) + member.Name + ", " + member.Level + ", " + member.Perception + ", " + member.Charisma + ", " + member.Luck + ", " +
+                CalcRemaining(TargetLevel, (x => x.Level), member, tmpparty) + ", " +
+                CalcRemaining(TargetGoal, (x => x.Perception), member, tmpparty) + ", " +
+                CalcRemaining(TargetGoal, (x => x.Charisma), member, tmpparty) + ", " +
+                CalcRemaining(TargetGoal, (x => x.Luck), member, tmpparty) + ", v_" +
+                        CalcVariance(tmpparty?.FirstOrDefault() ?? member, final_party));
+            };
+            void traceoutfinalgroupstats(RawInputRowData member, RawInputRowData[]? tmpparty = default)
+            {
+                var final_party = tmpparty.Skip(1).Append(member).ToArray();
+                Trace.WriteLine("\t\t\t\t\t\t" + CalcStat((x => x.Level), tmpparty[0], final_party) + ", " +
+                    CalcStat((x => x.Perception), tmpparty[0], final_party) + ", " +
+                    CalcStat((x => x.Charisma), tmpparty[0], final_party) + ", " +
+                    CalcStat((x => x.Luck), tmpparty[0], final_party) + ", V" +
+                    CalcVariance(tmpparty[0], final_party));
+                AddOutputRow(tmpparty[0], final_party);
             }
-            Trace.WriteLine("FiltereRows.Count = " + filteredRows.Count);
+            dataGridViewOutput.Rows.Clear();
+            foreach (DataGridViewColumn? column in dataGridViewOutput.Columns)
+            {
+                if(column != null)
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
 
-            first_column[] first_Columns = getfirst_columns(filteredRows).Distinct(new first_columnComparer()).ToArray();
-            combination[] combinations = getcombinations(filteredRows).Distinct(new combinationComparer()).ToArray();
+            dataGridViewOutput.AutoSizeColumnsMode =
+                DataGridViewAutoSizeColumnsMode.None;
+            foreach (var party0 in Sort1(filteredRows))
+            {
+                traceout(party0);
+                var tmp_party1 = new RawInputRowData[] { party0 };
+                foreach (var party1 in Sort1(filteredRows.Where(x => !tmp_party1.Contains(x)), tmp_party1).Take(max_per_level))
+                {
+                    traceout(party1, tmp_party1);
+                    var tmp_party2 = new RawInputRowData[] { party0, party1 };
+                    foreach (var party2 in Sort1(filteredRows.Where(x => !tmp_party2.Contains(x)), tmp_party2).Take(max_per_level))
+                    {
+                        traceout(party2, tmp_party2);
+                        var tmp_party3 = new RawInputRowData[] { party0, party1, party2 };
+                        foreach (var party3 in Sort1(filteredRows.Where(x => !tmp_party3.Contains(x)), tmp_party3).Take(max_per_level))
+                        {
+                            traceout(party3, tmp_party3);
+                            var tmp_party4 = new RawInputRowData[] { party0, party1, party2, party3 };
+                            foreach (var party4 in Sort1(filteredRows.Where(x => !tmp_party4.Contains(x)), tmp_party4).Take(max_per_level))
+                            {
+                                traceout(party4, tmp_party4);
+                                var tmp_party5 = new RawInputRowData[] { party0, party1, party2, party3, party4 };
+                                foreach (var party5 in Sort1(filteredRows.Where(x => !tmp_party5.Contains(x)), tmp_party5).Take(max_per_level))
+                                {
+                                    traceout(party5, tmp_party5);
+                                    traceoutfinalgroupstats(party5, tmp_party5);                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            dataGridViewOutput.AutoResizeColumns();
+            foreach (DataGridViewColumn? column in dataGridViewOutput.Columns)
+            {
+                if (column != null)
+                    column.SortMode = DataGridViewColumnSortMode.Automatic;
+            }
+            //Trace.WriteLine("FiltereRows.Count = " + filteredRows.Count);
 
-            saveoutputtofile(GetCombined_Outputs(first_Columns, combinations));
+            //first_column[] first_Columns = getfirst_columns(filteredRows).Distinct(new first_columnComparer()).ToArray();
+            //combination[] combinations = getcombinations(filteredRows).Distinct(new combinationComparer()).ToArray();
+
+            //saveoutputtofile(GetCombined_Outputs(first_Columns, combinations));
 
             //long approx_max_rows = filteredRows.Count * combinations.GetLength(0);
             //long current_row = 0;
@@ -754,6 +991,11 @@ namespace WaifuPartyCalcuator
                 heldDownItem = null;
                 //listView1.AutoArrange = true;         
             }
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

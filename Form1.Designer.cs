@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Charisma");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Perception");
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Luck");
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Variance");
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Level");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Charisma");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Perception");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Luck");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Variance");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Level");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -47,13 +47,13 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.listView1 = new System.Windows.Forms.ListView();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.textMax = new System.Windows.Forms.TextBox();
             this.checkDistinct = new System.Windows.Forms.CheckBox();
-            this.radioPCL = new System.Windows.Forms.RadioButton();
             this.radio101010 = new System.Windows.Forms.RadioButton();
             this.radio999 = new System.Windows.Forms.RadioButton();
             this.radio888 = new System.Windows.Forms.RadioButton();
@@ -83,7 +83,6 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label4 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewInput)).BeginInit();
@@ -232,7 +231,6 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.textMax);
             this.groupBox1.Controls.Add(this.checkDistinct);
-            this.groupBox1.Controls.Add(this.radioPCL);
             this.groupBox1.Controls.Add(this.radio101010);
             this.groupBox1.Controls.Add(this.radio999);
             this.groupBox1.Controls.Add(this.radio888);
@@ -244,16 +242,25 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Party Goals";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 274);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(0, 15);
+            this.label4.TabIndex = 17;
             // 
             // listView1
             // 
             this.listView1.HideSelection = false;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem11,
-            listViewItem12,
-            listViewItem13,
-            listViewItem14,
-            listViewItem15});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5});
             this.listView1.Location = new System.Drawing.Point(64, 142);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
@@ -270,9 +277,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 22);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(52, 15);
+            this.label3.Size = new System.Drawing.Size(42, 15);
             this.label3.TabIndex = 15;
-            this.label3.Text = "Filter By:";
+            this.label3.Text = "Target:";
             // 
             // label2
             // 
@@ -310,24 +317,14 @@
             this.checkDistinct.Text = "Distinct (P, C, L, Level)";
             this.checkDistinct.UseVisualStyleBackColor = true;
             // 
-            // radioPCL
-            // 
-            this.radioPCL.AutoSize = true;
-            this.radioPCL.Location = new System.Drawing.Point(64, 117);
-            this.radioPCL.Name = "radioPCL";
-            this.radioPCL.Size = new System.Drawing.Size(54, 19);
-            this.radioPCL.TabIndex = 4;
-            this.radioPCL.Text = "None";
-            this.radioPCL.UseVisualStyleBackColor = true;
-            // 
             // radio101010
             // 
             this.radio101010.AutoSize = true;
             this.radio101010.Location = new System.Drawing.Point(64, 95);
             this.radio101010.Name = "radio101010";
-            this.radio101010.Size = new System.Drawing.Size(67, 19);
+            this.radio101010.Size = new System.Drawing.Size(37, 19);
             this.radio101010.TabIndex = 3;
-            this.radio101010.Text = "10,10,10";
+            this.radio101010.Text = "10";
             this.radio101010.UseVisualStyleBackColor = true;
             // 
             // radio999
@@ -335,9 +332,9 @@
             this.radio999.AutoSize = true;
             this.radio999.Location = new System.Drawing.Point(64, 70);
             this.radio999.Name = "radio999";
-            this.radio999.Size = new System.Drawing.Size(49, 19);
+            this.radio999.Size = new System.Drawing.Size(31, 19);
             this.radio999.TabIndex = 2;
-            this.radio999.Text = "9,9,9";
+            this.radio999.Text = "9";
             this.radio999.UseVisualStyleBackColor = true;
             // 
             // radio888
@@ -345,9 +342,9 @@
             this.radio888.AutoSize = true;
             this.radio888.Location = new System.Drawing.Point(64, 45);
             this.radio888.Name = "radio888";
-            this.radio888.Size = new System.Drawing.Size(49, 19);
+            this.radio888.Size = new System.Drawing.Size(31, 19);
             this.radio888.TabIndex = 1;
-            this.radio888.Text = "8,8,8";
+            this.radio888.Text = "8";
             this.radio888.UseVisualStyleBackColor = true;
             // 
             // radio777
@@ -356,10 +353,10 @@
             this.radio777.Checked = true;
             this.radio777.Location = new System.Drawing.Point(64, 20);
             this.radio777.Name = "radio777";
-            this.radio777.Size = new System.Drawing.Size(49, 19);
+            this.radio777.Size = new System.Drawing.Size(31, 19);
             this.radio777.TabIndex = 0;
             this.radio777.TabStop = true;
-            this.radio777.Text = "7,7,7";
+            this.radio777.Text = "7";
             this.radio777.UseVisualStyleBackColor = true;
             // 
             // buttonGenerate
@@ -603,14 +600,6 @@
             this.loadToolStripMenuItem.Text = "Reload Waifus";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 274);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(0, 15);
-            this.label4.TabIndex = 17;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -664,7 +653,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton radioPCL;
         private System.Windows.Forms.RadioButton radio101010;
         private System.Windows.Forms.RadioButton radio999;
         private System.Windows.Forms.RadioButton radio888;
